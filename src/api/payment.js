@@ -1,0 +1,49 @@
+/*
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+ */
+import request from "../utils/request.js"
+
+
+// 获取订单号
+export const getOrderNo = (params) => {
+    return request({
+        url: "/alipay/createOrder",
+        method: "post",
+        data: params
+    })
+}
+
+
+
+// 支付
+export const payment = (params) => {
+    return request({
+        url: "/alipay/payment",
+        method: "post",
+        data: params
+    })
+}
+
+// 获取订单列表
+export const getOrderList = (params) => {
+    return request({
+        url: "/alipay/queryOrderList",
+        method: "get",
+        params: params
+    })
+}
+
+
+// 退款
+export const refund = (params) => {
+    return request({
+        url: "/alipay/refund",
+        method: "post",
+        data: params
+    })
+}

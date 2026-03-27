@@ -1,0 +1,121 @@
+/* 酒店系统图标自定义映射 - 基于您的图标库 */
+
+/* 基础设施类 */
+.icon-fitness_center:before { content: "\ea8f"; }  /* 健身房 */
+.icon-pool:before { content: "\e684"; }            /* 游泳池 */
+.icon-wifi:before { content: "\e620"; }            /* WiFi（使用前台图标） */
+.icon-local_parking:before { content: "\e66b"; }   /* 停车场 */
+.icon-elevator:before { content: "\e624"; }        /* 电梯 */
+.icon-ac_unit:before { content: "\e90d"; }         /* 空调 */
+.icon-thermostat:before { content: "\e684"; }      /* 温控（使用游泳池图标） */
+.icon-business_center:before { content: "\e62f"; } /* 商务中心（使用会议室图标） */
+.icon-spa:before { content: "\e626"; }             /* SPA */
+.icon-desk:before { content: "\e655"; }            /* 前台服务（使用快速入住图标） */
+
+/* 餐饮类 */
+.icon-restaurant:before { content: "\e8a4"; }      /* 餐厅 */
+.icon-local_bar:before { content: "\e68d"; }       /* 酒吧 */
+.icon-local_cafe:before { content: "\10121"; }     /* 咖啡厅 */
+.icon-restaurant_menu:before { content: "\e8a4"; } /* 餐厅菜单（使用餐厅图标） */
+.icon-breakfast_dining:before { content: "\e8a4"; }/* 早餐（使用餐厅图标） */
+.icon-set_meal:before { content: "\e74a"; }        /* 套餐（使用自助餐厅图标） */
+
+/* 房间设施类 */
+.icon-bed:before { content: "\e61c"; }             /* 床（使用沙发图标，或需要添加床图标） */
+.icon-tv:before { content: "\e675"; }              /* 电视 */
+.icon-shower:before { content: "\e60f"; }          /* 淋浴（使用温泉图标） */
+.icon-bathtub:before { content: "\e90c"; }         /* 浴缸 */
+.icon-kitchen:before { content: "\e90b"; }         /* 厨房（使用冰箱图标） */
+.icon-lock:before { content: "\e605"; }            /* 锁（使用安全报警器图标） */
+.icon-bathroom:before { content: "\e640"; }        /* 浴室（使用公共卫生间图标） */
+.icon-refrigerator:before { content: "\e90b"; }    /* 冰箱 */
+
+/* 服务类 */
+.icon-cleaning_services:before { content: "\e604"; } /* 清洁服务（使用干衣机图标） */
+.icon-room_service:before { content: "\e655"; }      /* 客房服务（使用快速入住图标） */
+.icon-luggage:before { content: "\e660"; }           /* 行李寄存 */
+.icon-concierge:before { content: "\e620"; }         /* 礼宾服务（使用前台图标） */
+.icon-taxi_alert:before { content: "\ef95"; }        /* 出租车服务 */
+.icon-local_laundry_service:before { content: "\e67d"; } /* 洗衣服务 */
+
+/* 安全设施类 */
+.icon-smoking_rooms:before { content: "\e635"; }    /* 吸烟室 */
+.icon-wc:before { content: "\e640"; }               /* 卫生间 */
+.icon-weekend:before { content: "\e61c"; }          /* 休闲（使用沙发图标） */
+.icon-meeting_room:before { content: "\e62f"; }     /* 会议室 */
+.icon-beach_access:before { content: "\e684"; }     /* 海滩（使用游泳池图标） */
+.icon-child_care:before { content: "\e63e"; }       /* 儿童看护（使用娱乐图标） */
+.icon-fire_extinguisher:before { content: "\e60d"; } /* 灭火器 */
+.icon-smoke_detector:before { content: "\e648"; }   /* 烟雾探测器 */
+.icon-security:before { content: "\e605"; }         /* 安全报警 */
+.icon-surveillance:before { content: "\e63b"; }     /* 监控 */
+
+/* 其他类 */
+.icon-towel:before { content: "\e6b6"; }            /* 毛巾 */
+.icon-slippers:before { content: "\e90a"; }         /* 拖鞋 */
+.icon-hair_dryer:before { content: "\e6b7"; }       /* 吹风机 */
+.icon-phone:before { content: "\e842"; }            /* 电话 */
+.icon-charging_station:before { content: "\e689"; } /* 充电桩 */
+.icon-entertainment:before { content: "\e63e"; }    /* 娱乐设施 */
+.icon-multimedia:before { content: "\e600"; }       /* 多媒体系统 */
+.icon-camera:before { content: "\e618"; }           /* 摄像头 *//* 酒店系统图标自定义映射 - 基于您的图标库 */
+
+/* 基础设施类 */
+.icon-fitness_center:before { content: "\ea8f"; }  /* 健身房 */
+.icon-pool:before { content: "\e684"; }            /* 游泳池 */
+.icon-wifi:before { content: "\e620"; }            /* WiFi（使用前台图标） */
+.icon-local_parking:before { content: "\e66b"; }   /* 停车场 */
+.icon-elevator:before { content: "\e624"; }        /* 电梯 */
+.icon-ac_unit:before { content: "\e90d"; }         /* 空调 */
+.icon-thermostat:before { content: "\e684"; }      /* 温控（使用游泳池图标） */
+.icon-business_center:before { content: "\e62f"; } /* 商务中心（使用会议室图标） */
+.icon-spa:before { content: "\e626"; }             /* SPA */
+.icon-desk:before { content: "\e655"; }            /* 前台服务（使用快速入住图标） */
+
+/* 餐饮类 */
+.icon-restaurant:before { content: "\e8a4"; }      /* 餐厅 */
+.icon-local_bar:before { content: "\e68d"; }       /* 酒吧 */
+.icon-local_cafe:before { content: "\10121"; }     /* 咖啡厅 */
+.icon-restaurant_menu:before { content: "\e8a4"; } /* 餐厅菜单（使用餐厅图标） */
+.icon-breakfast_dining:before { content: "\e8a4"; }/* 早餐（使用餐厅图标） */
+.icon-set_meal:before { content: "\e74a"; }        /* 套餐（使用自助餐厅图标） */
+
+/* 房间设施类 */
+.icon-bed:before { content: "\e61c"; }             /* 床（使用沙发图标，或需要添加床图标） */
+.icon-tv:before { content: "\e675"; }              /* 电视 */
+.icon-shower:before { content: "\e60f"; }          /* 淋浴（使用温泉图标） */
+.icon-bathtub:before { content: "\e90c"; }         /* 浴缸 */
+.icon-kitchen:before { content: "\e90b"; }         /* 厨房（使用冰箱图标） */
+.icon-lock:before { content: "\e605"; }            /* 锁（使用安全报警器图标） */
+.icon-bathroom:before { content: "\e640"; }        /* 浴室（使用公共卫生间图标） */
+.icon-refrigerator:before { content: "\e90b"; }    /* 冰箱 */
+
+/* 服务类 */
+.icon-cleaning_services:before { content: "\e604"; } /* 清洁服务（使用干衣机图标） */
+.icon-room_service:before { content: "\e655"; }      /* 客房服务（使用快速入住图标） */
+.icon-luggage:before { content: "\e660"; }           /* 行李寄存 */
+.icon-concierge:before { content: "\e620"; }         /* 礼宾服务（使用前台图标） */
+.icon-taxi_alert:before { content: "\ef95"; }        /* 出租车服务 */
+.icon-local_laundry_service:before { content: "\e67d"; } /* 洗衣服务 */
+
+/* 安全设施类 */
+.icon-smoking_rooms:before { content: "\e635"; }    /* 吸烟室 */
+.icon-wc:before { content: "\e640"; }               /* 卫生间 */
+.icon-weekend:before { content: "\e61c"; }          /* 休闲（使用沙发图标） */
+.icon-meeting_room:before { content: "\e62f"; }     /* 会议室 */
+.icon-beach_access:before { content: "\e684"; }     /* 海滩（使用游泳池图标） */
+.icon-child_care:before { content: "\e63e"; }       /* 儿童看护（使用娱乐图标） */
+.icon-fire_extinguisher:before { content: "\e60d"; } /* 灭火器 */
+.icon-smoke_detector:before { content: "\e648"; }   /* 烟雾探测器 */
+.icon-security:before { content: "\e605"; }         /* 安全报警 */
+.icon-surveillance:before { content: "\e63b"; }     /* 监控 */
+
+/* 其他类 */
+.icon-towel:before { content: "\e6b6"; }            /* 毛巾 */
+.icon-slippers:before { content: "\e90a"; }         /* 拖鞋 */
+.icon-hair_dryer:before { content: "\e6b7"; }       /* 吹风机 */
+.icon-phone:before { content: "\e842"; }            /* 电话 */
+.icon-charging_station:before { content: "\e689"; } /* 充电桩 */
+.icon-entertainment:before { content: "\e63e"; }    /* 娱乐设施 */
+.icon-multimedia:before { content: "\e600"; }       /* 多媒体系统 */
+.icon-camera:before { content: "\e618"; }           /* 摄像头 */

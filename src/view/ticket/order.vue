@@ -1,0 +1,262 @@
+<!--
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+-->
+<!--  -->
+<template>
+  <div>
+    <!-- 支付结果提示 -->
+    <el-alert
+      v-if="paySuccess"
+      title="支付成功！"
+      type="success"
+      description="您的订单已支付成功，请查看订单详情。"
+      show-icon
+      :closable="true"
+      style="margin-bottom: 20px"
+    />
+
+    <div class="query-form">
+      <div class="title">票务订单</div>
+      <div class="query-item">
+        <el-input placeholder="请输入订单号" v-model="queryForm.outTradeNo"></el-input>
+        <el-input placeholder="请输入手机号" v-model="queryForm.userPhone"></el-input>
+        <el-input placeholder="请输入身份证号" v-model="queryForm.userIdCard"></el-input>
+        <el-button type="primary" @click="handleQuery">
+          <el-icon><Search /></el-icon>查询</el-button
+        >
+        <el-button @click="handleReset">
+          <el-icon><RefreshLeft /></el-icon>重置</el-button
+        >
+      </div>
+    </div>
+    <!--  创建 展示 -->
+    <div class="base-table">
+      <div class="action"></div>
+    </div>
+    <!-- 表格展示 -->
+    <el-table
+      v-loading="loading"
+      :data="tableData"
+      style="width: 100%"
+      height="calc(100vh - 285px)"
+      :row-style="{ height: '55px' }"
+    >
+      <el-table-column
+        prop="orderNumber"
+        label="订单编号"
+        width="265"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
+      <!-- <el-table-column prop="type" label="图片" align="center">
+        <template #default="scope">
+          <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
+        </template>
+      </el-table-column> -->
+      <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
+      <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
+      <el-table-column
+        prop="userIdCard"
+        width="200"
+        label="身份证号"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="playDate" label="游玩日期" align="center"></el-table-column>
+      <el-table-column
+        prop="ticketPrice"
+        label="票务单价"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
+      <el-table-column
+        prop="orderAmount"
+        label="付款金额"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="refundAmount"
+        label="退款金额"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="orderStatus" label="订单状态" align="center">
+        <template #default="scope">
+          <el-tag :type="getOrderStatusType(scope.row.orderStatus)">
+            {{ getOrderStatusText(scope.row.orderStatus) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="verifyStatus" label="核销状态" align="center">
+        <template #default="scope">
+          <el-tag :type="getOrderStatusType(scope.row.verifyStatus)">
+            {{ getVerifyStatusText(scope.row.verifyStatus) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="" label="操作" fixed="right">
+        <template #default="scope">
+          <el-button type="primary" link @click="handleRefund(scope.row)">退款</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 翻页 -->
+    <div class="table-pagination">
+      <Pagination
+        :pagination="pagination"
+        @handleSizeChange="handleSizeChange"
+        @handleCurrentChange="handleCurrentChange"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { ElMessage } from "element-plus";
+import { paymentApi } from "../../api/index.js";
+import { cryptoUtil } from "../../utils/utils.js";
+import Pagination from "../../components/pagination/pagination.vue";
+
+const route = useRoute();
+const loading = ref(false);
+
+const queryForm = ref({
+  outTradeNo: "",
+  userPhone: "",
+  userIdCard: "",
+});
+
+// 分页参数
+const pagination = ref({
+  pageNum: 1,
+  pageSize: 10,
+  total: 0,
+});
+
+const tableData = ref([]);
+
+// 支付成功状态
+const paySuccess = ref(false);
+
+// 支付完成后跳转处理
+onMounted(() => {
+  getOrderList();
+  // 从 URL 获取订单号
+  const orderNo = route.query.out_trade_no;
+  if (orderNo) {
+    // 自动填充订单号并查询
+    queryForm.value.outTradeNo = orderNo;
+    handleQuery();
+
+    // 显示支付成功提示
+    paySuccess.value = true;
+    ElMessage.success("支付成功！");
+  }
+});
+
+// 查询订单
+const handleQuery = async () => {
+  if (
+    !queryForm.value.outTradeNo &&
+    !queryForm.value.userPhone &&
+    !queryForm.value.userIdCard
+  ) {
+    ElMessage.error("请输入查询条件");
+    return;
+  }
+  queryForm.value.userPhone = cryptoUtil.encrypt(queryForm.value.userPhone);
+  queryForm.value.userIdCard = cryptoUtil.encrypt(queryForm.value.userIdCard);
+  // TODO: 调用接口查询订单列表
+  console.log("查询订单:", queryForm.value);
+};
+
+// 获取订单列表
+const getOrderList = async () => {
+  // TODO: 调用接口获取订单列表
+  loading.value = true;
+  let res = await paymentApi.getOrderList({
+    ...pagination.value,
+    ...queryForm.value,
+  });
+
+  if (res.code === 200) {
+    res.data.orderList.forEach((item) => {
+      item.userPhone = cryptoUtil.decrypt(item.userPhone);
+      item.userIdCard = cryptoUtil.decrypt(item.userIdCard);
+    });
+
+    tableData.value = res.data.orderList;
+    pagination.value.total = res.data.total;
+  }
+  loading.value = false;
+  console.log("获取订单列表:", tableData.value);
+};
+
+// 重置
+const handleReset = () => {
+  queryForm.value.outTradeNo = "";
+};
+
+// 分页管理
+const handleSizeChange = (val) => {
+  console.log("什么东西1", val);
+};
+
+const handleCurrentChange = (val) => {
+  pagination.value.pageNum = val; // 当前页
+  getOrderList();
+};
+
+// 获取订单状态标签类型
+const getOrderStatusType = (status) => {
+  const typeMap = {
+    1: "warning",
+    2: "success",
+    3: "info",
+    4: "primary",
+    5: "danger",
+  };
+  return typeMap[status] || "info";
+};
+
+// 获取订单状态文本
+const getOrderStatusText = (status) => {
+  const textMap = {
+    1: "待支付",
+    2: "已支付",
+    3: "已取消",
+    4: "已完成",
+    5: "已退款",
+  };
+  return textMap[status] || "未知";
+};
+const getVerifyStatusText = (status) => {
+  const textMap = {
+    1: "待核销",
+    2: "已核销",
+    3: "已取消",
+  };
+  return textMap[status] || "未知";
+};
+
+// 用户退款
+const handleRefund = async (row) => {
+  console.log("退款", row);
+  let res = await paymentApi.refund({
+    orderNumber: row.orderNumber,
+  });
+  if (res.code === 200) {
+    ElMessage.success("退款成功");
+    getOrderList();
+  } else {
+    ElMessage.error(res.msg || "退款失败");
+  }
+};
+</script>
+
+<style lang="scss" scoped></style>
