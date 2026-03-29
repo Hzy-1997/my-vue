@@ -177,8 +177,8 @@ const login = async () => {
           type: "success",
         });
         let params = {
-          // id:res.data.userInfo.id
-          id: 31,
+          id:res.data.userInfo.id
+          // id: 31,
         };
         storage.setToken(res.data.token);
         storage.setUserInfo(res.data.userInfo);
