@@ -11,8 +11,12 @@
     <div class="base-table">
       <!-- 操作  -->
       <div class="action">
-        <el-button type="primary" @click="handleCreateRole">创建角色</el-button>
-        <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
+        <el-button type="primary" @click="handleCreateRole" v-has="'role-create'"
+          >创建角色</el-button
+        >
+        <el-button type="danger" @click="handleBatchDelete" v-has="'role-delete'"
+          >批量删除</el-button
+        >
       </div>
 
       <!-- 列表 -->
@@ -54,10 +58,18 @@
         <el-table-column prop="createdAt" label="创建时间" width="200" align="center" />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEditRole(scope.row)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleEditRole(scope.row)"
+              v-has="'role-update'"
               >编辑</el-button
             >
-            <el-button type="danger" size="small" @click="handleDeleteRole(scope.row)"
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDeleteRole(scope.row)"
+              v-has="'role-delete'"
               >删除</el-button
             >
           </template>
@@ -93,10 +105,17 @@
 
           <!--      :default-checked-keys="roleForm.permissions" -->
           <el-form-item label="菜单权限" prop="remark">
-            <div style="border: 1px solid #ccc; width: 100%; min-height: 350px">
+            <div
+              style="
+                border: 1px solid #ccc;
+                width: 100%;
+                max-height: 300px;
+                overflow-y: auto;
+              "
+            >
               <el-tree
                 ref="treeRef"
-                style="max-width: 600px"
+                style="max-width: 100%"
                 :data="menuList"
                 show-checkbox
                 node-key="id"

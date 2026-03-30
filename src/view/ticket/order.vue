@@ -99,7 +99,13 @@
       </el-table-column>
       <el-table-column prop="" label="操作" fixed="right">
         <template #default="scope">
-          <el-button type="primary" link @click="handleRefund(scope.row)">退款</el-button>
+          <el-button
+            type="primary"
+            link
+            @click="handleRefund(scope.row)"
+            v-has="'order-refund'"
+            >退款</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

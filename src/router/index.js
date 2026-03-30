@@ -31,8 +31,7 @@ async function loadAsyncRoutes() {
         const storage = useStorage();
         let userInfo = storage.comUserInfo
         let params = {
-            //   id:userInfo.id
-            id: 31,
+            id: userInfo.id
         };
         let asyncRoutes = await userApi.getUserPermissions(params);
         // 如果是会话状态过期就什么都不做

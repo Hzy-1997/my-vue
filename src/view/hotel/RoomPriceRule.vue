@@ -27,7 +27,9 @@
     <!-- 操作 -->
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">创建房型套餐</el-button>
+        <el-button type="primary" @click="handleCreate" v-has="'RoomPriceRule-create'"
+          >创建房型套餐</el-button
+        >
       </div>
     </div>
 
@@ -56,13 +58,25 @@
 
       <el-table-column fixed="right" prop="" label="操作" min-width="120" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="handleConfigPrice(scope.row)"
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleConfigPrice(scope.row)"
+            v-has="'RoomPriceRule-config'"
             >配置价格规则</el-button
           >
-          <el-button type="primary" size="small" @click="handleEdit(scope.row)"
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleEdit(scope.row)"
+            v-has="'RoomPriceRule-update'"
             >编辑</el-button
           >
-          <el-button type="danger" size="small" @click="handleDelete(scope.row)"
+          <el-button
+            type="danger"
+            size="small"
+            @click="handleDelete(scope.row)"
+            v-has="'RoomPriceRule-delete'"
             >删除</el-button
           >
         </template>
