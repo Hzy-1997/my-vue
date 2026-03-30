@@ -12,7 +12,9 @@
     <!-- 操作区域 -->
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">创建部门</el-button>
+        <el-button type="primary" @click="handleCreate" v-has="'dept-create'"
+          >创建部门</el-button
+        >
       </div>
       <!-- 列表部门展示 -->
       <el-table
@@ -47,10 +49,18 @@
 
         <el-table-column fixed="right" label="操作" min-width="120" align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleEdit(scope.row)"
+              v-has="'dept-update'"
               >编辑</el-button
             >
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)"
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(scope.row)"
+              v-has="'dept-delete'"
               >删除</el-button
             >
           </template>
@@ -127,7 +137,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <span slot="footer" class="dialog-footer">
+        <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="handleAddDept">确 定</el-button>
         </span>

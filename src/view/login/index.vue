@@ -157,11 +157,6 @@ const resetCount = () => {
 
 // 登录
 const login = async () => {
-  console.log("API URL:", import.meta.env.VITE_API_URL);
-  console.log("Secret Key:", import.meta.env.VITE_SECRET_KEY);
-  console.log("Crypto Key:", import.meta.env.VITE_CRYPTO_SECRET_KEY);
-  console.log("所有环境变量:", import.meta.env);
-
   loginForm.value.validate(async (valid) => {
     if (valid) {
       let data = {
@@ -178,7 +173,6 @@ const login = async () => {
         });
         let params = {
           id:res.data.userInfo.id
-          // id: 31,
         };
         storage.setToken(res.data.token);
         storage.setUserInfo(res.data.userInfo);

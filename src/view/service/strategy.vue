@@ -2,7 +2,7 @@
   <div>
     <!-- 头部搜索 -->
     <div class="query-form">
-      <div class="title">攻略管理123</div>
+      <div class="title">攻略管理</div>
       <div class="query-item">
         <el-input placeholder="请输入攻略名称" v-model="queryForm.title"></el-input>
         <el-button type="primary" @click="handleQuery">
@@ -16,7 +16,9 @@
     <!--  创建 展示 -->
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">创建攻略</el-button>
+        <el-button type="primary" @click="handleCreate" v-has="'strategy-create'"
+          >创建攻略</el-button
+        >
       </div>
     </div>
 
@@ -33,8 +35,20 @@
       <el-table-column prop="time" label="创建时间"></el-table-column>
       <el-table-column prop="" label="操作">
         <template #default="scope">
-          <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            type="primary"
+            link
+            @click="handleEdit(scope.row)"
+            v-has="'strategy-update'"
+            >编辑</el-button
+          >
+          <el-button
+            type="danger"
+            link
+            @click="handleDelete(scope.row)"
+            v-has="'strategy-delete'"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

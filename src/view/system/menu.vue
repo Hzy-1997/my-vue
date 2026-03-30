@@ -11,10 +11,7 @@
     <div class="query-form">
       <div class="title">菜单管理</div>
       <div class="query-item">
-        <el-input
-          placeholder="请输入菜单名称"
-          v-model="queryForm.menuName"
-        ></el-input>
+        <el-input placeholder="请输入菜单名称" v-model="queryForm.menuName"></el-input>
         <el-button type="primary" @click="handleQuery">
           <el-icon><Search /></el-icon>查询</el-button
         >
@@ -36,19 +33,9 @@
         height="calc(100vh - 300px)"
         style="width: 100%"
       >
-        <el-table-column
-          prop="menuName"
-          label="菜单名称"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="menuName" label="菜单名称" width="180" align="center">
         </el-table-column>
-        <el-table-column
-          prop="icon"
-          label="菜单图标"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="icon" label="菜单图标" width="120" align="center">
           <template #default="scope">
             <svg-icon
               v-if="scope.row.icon"
@@ -59,73 +46,48 @@
             <span v-else style="color: #909399">无图标</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="menuLevel"
-          label="菜单类型"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="menuLevel" label="菜单类型" width="120" align="center">
           <template #default="scope">
             <el-tag
               :type="
                 scope.row.menuLevel === 1
                   ? 'success'
                   : scope.row.menuLevel === 2
-                    ? 'primary'
-                    : 'warning'
+                  ? 'primary'
+                  : 'warning'
               "
             >
               {{
                 scope.row.menuLevel === 1
                   ? "目录"
                   : scope.row.menuLevel === 2
-                    ? "菜单"
-                    : "按钮"
+                  ? "菜单"
+                  : "按钮"
               }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="sort"
-          label="排序展示"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="sort" label="排序展示" width="80" align="center">
         </el-table-column>
         <el-table-column
           prop="permissionFlag"
           label="权限标识"
-          width="180"
+          width="250"
           align="center"
         >
         </el-table-column>
-        <el-table-column
-          prop="path"
-          label="路由地址"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="path" label="路由地址" width="180" align="center">
         </el-table-column>
-        <el-table-column
-          prop="component"
-          label="组件路径"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="component" label="组件路径" width="180" align="center">
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="180" align="center">
+        <el-table-column prop="status" label="状态" width="120" align="center">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{
               scope.row.status === 1 ? "启用" : "禁用"
             }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createdAt"
-          label="创建时间"
-          width="180"
-          align="center"
-        >
+        <el-table-column prop="createdAt" label="创建时间" width="180" align="center">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -136,20 +98,14 @@
         >
           <template #default="scope">
             <span v-if="scope.row.menuLevel != 3">
-              <el-button
-                type="primary"
-                size="small"
-                @click="handleAdd(scope.row)"
+              <el-button type="primary" size="small" @click="handleAdd(scope.row)"
                 >新增</el-button
               ></span
             >
             <el-button type="" size="small" @click="handleEdit(scope.row)"
               >编辑</el-button
             >
-            <el-button
-              type="danger"
-              size="small"
-              @click="handleDelete(scope.row)"
+            <el-button type="danger" size="small" @click="handleDelete(scope.row)"
               >删除</el-button
             >
           </template>
@@ -165,12 +121,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
     >
-      <el-form
-        :model="menuForm"
-        :rules="rules"
-        ref="ruleFormRef"
-        label-width="120px"
-      >
+      <el-form :model="menuForm" :rules="rules" ref="ruleFormRef" label-width="120px">
         <el-form-item label="父菜单" prop="parentId">
           <el-cascader
             v-model="menuForm.parentId"
@@ -195,11 +146,7 @@
             <el-radio :value="3" size="large">按钮</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item
-          label="菜单图标"
-          prop="icon"
-          v-show="menuForm.menuLevel == 1"
-        >
+        <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuLevel == 1">
           <el-input v-model="menuForm.icon" readonly>
             <template #prefix>
               <svg-icon
@@ -212,33 +159,17 @@
           <IconSelect @selected="handleIconSelected"></IconSelect>
         </el-form-item>
 
-        <el-form-item
-          label="菜单名称"
-          prop="menuName"
-          v-show="menuForm.menuLevel != 3"
-        >
+        <el-form-item label="菜单名称" prop="menuName" v-show="menuForm.menuLevel != 3">
           <el-input v-model="menuForm.menuName"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="路由地址"
-          prop="path"
-          v-show="menuForm.menuLevel != 3"
-        >
+        <el-form-item label="路由地址" prop="path" v-show="menuForm.menuLevel != 3">
           <el-input v-model="menuForm.path"></el-input>
         </el-form-item>
-        <el-form-item
-          label="组件地址"
-          prop="component"
-          v-show="menuForm.menuLevel === 2"
-        >
+        <el-form-item label="组件地址" prop="component" v-show="menuForm.menuLevel === 2">
           <el-input v-model="menuForm.component"></el-input>
         </el-form-item>
-        <el-form-item
-          label="显示顺序"
-          prop="sort"
-          v-show="menuForm.menuLevel != 3"
-        >
+        <el-form-item label="显示顺序" prop="sort" v-show="menuForm.menuLevel != 3">
           <el-input-number
             v-model="menuForm.sort"
             :min="0"
@@ -248,11 +179,7 @@
         </el-form-item>
 
         <!-- 权限 -->
-        <el-form-item
-          label="权限名称"
-          prop="menuName"
-          v-show="menuForm.menuLevel === 3"
-        >
+        <el-form-item label="权限名称" prop="menuName" v-show="menuForm.menuLevel === 3">
           <el-input v-model="menuForm.menuName"></el-input>
         </el-form-item>
         <el-form-item prop="permissionFlag" v-show="menuForm.menuLevel === 3">
@@ -275,9 +202,7 @@
                   /></el-icon>
                 </template>
               </el-popover>
-              <span style="display: inline-block; vertical-align: middle"
-                >权限标识</span
-              >
+              <span style="display: inline-block; vertical-align: middle">权限标识</span>
             </div>
           </template>
           <el-input v-model="menuForm.permissionFlag"></el-input>
@@ -331,7 +256,7 @@ let menuForm = ref({
 });
 
 let content =
-  "权限标识用于控制按钮级别的权限访问(如下拉框、按钮等),请以菜单路由横线开头,如菜单路由为:menu,则权限标识为:menu-create,menu-delete,menu-update,menu-read)";
+  "权限标识用于控制按钮级别的权限访问(如下拉框、按钮等),请以菜单路由横线开头,如菜单路由为:menu,则权限标识为:menu-create,menu-delete,menu-update)";
 
 let menuInfo = ref({});
 
@@ -341,9 +266,7 @@ let superiorList = ref([]);
 
 // 校验
 let rules = ref({
-  menuName: [
-    { required: true, message: "请输入菜单名称", trigger: ["blur", "input"] },
-  ],
+  menuName: [{ required: true, message: "请输入菜单名称", trigger: ["blur", "input"] }],
 });
 
 //      -----------------   函数  ---------------------------
@@ -436,8 +359,7 @@ let handleIconSelected = (iconName) => {
 // 提交
 let handleSubmit = () => {
   if (menuForm.value.menuLevel == 3) {
-    menuForm.value.permissionFlag =
-      menuInfo.value.path + menuForm.value.permissionFlag;
+    menuForm.value.permissionFlag = menuForm.value.permissionFlag;
   }
   ruleFormRef.value.validate(async (valid) => {
     console.log("valid", valid);

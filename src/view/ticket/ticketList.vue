@@ -27,7 +27,9 @@
     <!-- 操作 -->
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">创建票务</el-button>
+        <el-button type="primary" @click="handleCreate" v-has="'ticketList-create'"
+          >创建票务</el-button
+        >
       </div>
     </div>
 
@@ -88,11 +90,27 @@
       ></el-table-column>
       <el-table-column prop="" label="操作" fixed="right" width="200" align="center">
         <template #default="scope">
-          <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="primary" link @click="handleDelete(scope.row)"
+          <el-button
+            type="primary"
+            link
+            @click="handleEdit(scope.row)"
+            v-has="'ticketList-update'"
+            >编辑</el-button
+          >
+          <el-button
+            type="primary"
+            link
+            @click="handleSetScene(scope.row)"
+            v-has="'ticketList-setScene'"
             >景点设置</el-button
           >
-          <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            type="danger"
+            link
+            @click="handleDelete(scope.row)"
+            v-has="'ticketList-delete'"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

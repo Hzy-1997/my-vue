@@ -11,7 +11,9 @@
 
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">创建酒店</el-button>
+        <el-button type="primary" @click="handleCreate" v-has="'hotel-create'"
+          >创建酒店</el-button
+        >
       </div>
     </div>
 
@@ -42,10 +44,19 @@
       <el-table-column prop="created_at" label="创建时间" align="center" />
       <el-table-column fixed="right" label="操作" min-width="120" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="editClick(scope.row)">
+          <el-button
+            type="primary"
+            size="small"
+            @click="editClick(scope.row)"
+            v-has="'hotel-update'"
+          >
             编辑
           </el-button>
-          <el-button type="danger" size="small" @click="deleteClick(scope.row)"
+          <el-button
+            type="danger"
+            size="small"
+            @click="deleteClick(scope.row)"
+            v-has="'hotel-delete'"
             >删除</el-button
           >
         </template>

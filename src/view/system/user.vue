@@ -17,10 +17,12 @@
     <!-- 操作及表格 -->
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="createUser" v-has="'user-update'"
+        <el-button type="primary" @click="createUser" v-has="'user-create'"
           >创建用户</el-button
         >
-        <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
+        <el-button type="danger" @click="handleBatchDelete" v-has="'user-delete'"
+          >批量删除</el-button
+        >
       </div>
 
       <el-table
@@ -31,31 +33,11 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="ID" width="50" align="center" />
-        <el-table-column
-          prop="username"
-          label="用户名"
-          width="100"
-          align="center"
-        />
-        <el-table-column
-          prop="avatar"
-          label="头像"
-          width="120"
-          align="center"
-        />
-        <el-table-column
-          prop="account"
-          label="账号"
-          width="150"
-          align="center"
-        />
+        <el-table-column prop="username" label="用户名" width="100" align="center" />
+        <el-table-column prop="avatar" label="头像" width="120" align="center" />
+        <el-table-column prop="account" label="账号" width="150" align="center" />
         <el-table-column prop="email" label="邮箱" width="200" align="center" />
-        <el-table-column
-          prop="phone"
-          label="手机号"
-          width="120"
-          align="center"
-        />
+        <el-table-column prop="phone" label="手机号" width="120" align="center" />
         <el-table-column prop="job" label="岗位" width="120" align="center" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="scope">
@@ -64,32 +46,18 @@
                 scope.row.status == 0
                   ? 'success'
                   : scope.row.status == 2
-                    ? 'warning'
-                    : 'danger'
+                  ? 'warning'
+                  : 'danger'
               "
             >
               {{
-                scope.row.status == 0
-                  ? "在职"
-                  : scope.row.status == 2
-                    ? "试用期"
-                    : "离职"
+                scope.row.status == 0 ? "在职" : scope.row.status == 2 ? "试用期" : "离职"
               }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createdAt"
-          label="创建时间"
-          width="200"
-          align="center"
-        />
-        <el-table-column
-          prop="accountStatus"
-          label="账户状态"
-          width="200"
-          align="center"
-        >
+        <el-table-column prop="createdAt" label="创建时间" width="200" align="center" />
+        <el-table-column prop="accountStatus" label="账户状态" width="200" align="center">
           <template #default="scope">
             <el-switch
               v-model="scope.row.accountStatus"
@@ -110,13 +78,18 @@
           align="center"
         >
           <template #default="scope">
-            <el-button type="primary" size="small" @click="editUser(scope.row)"
+            <el-button
+              type="primary"
+              size="small"
+              @click="editUser(scope.row)"
+              v-has="'user-update'"
               >编辑</el-button
             >
             <el-button
               type="danger"
               size="small"
               @click="handleDelete(scope.row)"
+              v-has="'user-delete'"
               >删除</el-button
             >
           </template>
@@ -137,12 +110,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
     >
-      <el-form
-        :model="formData"
-        ref="ruleFormRef"
-        :rules="rules"
-        label-width="80px"
-      >
+      <el-form :model="formData" ref="ruleFormRef" :rules="rules" label-width="80px">
         <!-- 姓名 -->
         <el-form-item label="用户姓名" prop="username">
           <el-input v-model="formData.username" placeholder="请输入用户姓名" />
@@ -340,8 +308,7 @@ const rules = reactive({
     },
     // 密码必须包含字母、数字和特殊字符
     {
-      pattern:
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&=+])[A-Za-z\d@$!%*?&=+]{6,20}$/,
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&=+])[A-Za-z\d@$!%*?&=+]{6,20}$/,
       message: "密码必须包含字母、数字和特殊字符",
       trigger: "blur",
     },
@@ -584,7 +551,7 @@ let handleBatchDelete = async () => {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
-    },
+    }
   ).then(async () => {
     try {
       let data = {
