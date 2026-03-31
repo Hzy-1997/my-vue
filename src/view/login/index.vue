@@ -89,10 +89,12 @@ const storage = useStorage();
 //   msg: String,
 // });
 const loginData = ref({
-  account: "admin",
-  userPwd: "Hzy=1997+97",
+  // account: "admin",
+  // userPwd: "Hzy=1997+97",
   uuid: "",
   code: "",
+  account: "",
+  userPwd: "",
 });
 
 const rules = ref({
@@ -172,7 +174,7 @@ const login = async () => {
           type: "success",
         });
         let params = {
-          id:res.data.userInfo.id
+          id: res.data.userInfo.id,
         };
         storage.setToken(res.data.token);
         storage.setUserInfo(res.data.userInfo);
