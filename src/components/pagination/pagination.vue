@@ -54,7 +54,7 @@ const handleSizeChange = (val) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
   span {
     margin-left: 10px;
     color: #7b7f8c;

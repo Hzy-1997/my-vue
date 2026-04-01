@@ -139,8 +139,9 @@ const personalCenter = () => {
     }
     .wrapper {
       background-color: #eef0f3;
-      padding: 20px 10px 10px 10px;
-      height: calc(100vh - 93px);
+      padding: 20px 10px 5px 10px;
+      height: calc(100vh - 95px);
+      // height: 100vh;
       .main-page {
         background: #fff;
         height: 100%;

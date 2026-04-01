@@ -28,7 +28,7 @@
       <el-table
         :data="tableData"
         style="width: 100%"
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 255px)"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
@@ -96,6 +96,12 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <Pagination
+      :pagination="pagination"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    />
 
     <!-- 表单填写 -->
     <el-dialog
@@ -225,13 +231,6 @@
         </span>
       </template>
     </el-dialog>
-    <div class="table-pagination">
-      <Pagination
-        :pagination="pagination"
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-      />
-    </div>
   </div>
 </template>
 
@@ -593,4 +592,7 @@ let handleSizeChange = (val) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table-pagination {
+}
+</style>

@@ -30,7 +30,7 @@
         :data="tableData"
         :tree-props="{ children: 'children' }"
         row-key="id"
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 255px)"
         style="width: 100%"
       >
         <el-table-column prop="menuName" label="菜单名称" width="180" align="center">

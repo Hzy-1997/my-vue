@@ -23,7 +23,7 @@
       <el-table
         :data="tableData"
         style="width: 100%"
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 255px)"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />

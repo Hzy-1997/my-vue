@@ -22,7 +22,7 @@
         style="width: 100%"
         row-key="id"
         stripe
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 255px)"
         :tree-props="{ children: 'Children' }"
       >
         <!-- <el-table-column prop="id" label="标识" width="80" align="center" /> -->

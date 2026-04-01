@@ -31,90 +31,93 @@
           >创建票务</el-button
         >
       </div>
+
+      <!-- 表格展示 -->
+      <el-table :data="ticketList" height="calc(100vh - 255px)" style="width: 100%">
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="id" label="ID" width="50" align="center" />
+        <el-table-column
+          prop="title"
+          width="180"
+          align="center"
+          label="票务名称"
+        ></el-table-column>
+        <el-table-column prop="homeImg" label="图片" align="center">
+          <template #default="scope">
+            <el-image
+              :src="imgUrl + scope.row.homeImg"
+              style="width: 50px; height: 50px"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="category" label="票务种类" align="center">
+          <template #default="scope">
+            {{
+              category.find((item) => item.value == scope.row.category)?.label ||
+              "未知票种"
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="票务类型" align="center">
+          <template #default="scope">
+            <span>{{ scope.row.ticketType == 1 ? "演出票" : "体验票" }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="price" label="价格" align="center"></el-table-column>
+        <el-table-column
+          prop="productCode"
+          label="产品编码"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column prop="stock" label="库存" align="center"></el-table-column>
+        <el-table-column prop="stock" label="状态" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.isDown"
+              active-text="启用"
+              inactive-text="禁用"
+              :active-value="1"
+              :inactive-value="2"
+              @change="handleTicketingStatus(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="stock" label="库存数量" align="center"></el-table-column> -->
+        <el-table-column
+          prop="createdAt"
+          label="创建时间"
+          width="180"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="" label="操作" fixed="right" width="200" align="center">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              link
+              @click="handleEdit(scope.row)"
+              v-has="'ticketList-update'"
+              >编辑</el-button
+            >
+            <el-button
+              type="primary"
+              link
+              @click="handleSetScene(scope.row)"
+              v-has="'ticketList-setScene'"
+              >景点设置</el-button
+            >
+            <el-button
+              type="danger"
+              link
+              @click="handleDelete(scope.row)"
+              v-has="'ticketList-delete'"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-
-    <!-- 表格展示 -->
-    <el-table :data="ticketList" style="width: 100%">
-      <el-table-column type="selection" width="30" />
-      <el-table-column prop="id" label="ID" width="50" align="center" />
-      <el-table-column
-        prop="title"
-        width="180"
-        align="center"
-        label="票务名称"
-      ></el-table-column>
-      <el-table-column prop="homeImg" label="图片" align="center">
-        <template #default="scope">
-          <el-image :src="imgUrl + scope.row.homeImg" style="width: 50px; height: 50px" />
-        </template>
-      </el-table-column>
-
-      <el-table-column prop="category" label="票务种类" align="center">
-        <template #default="scope">
-          {{
-            category.find((item) => item.value == scope.row.category)?.label || "未知票种"
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="type" label="票务类型" align="center">
-        <template #default="scope">
-          <span>{{ scope.row.ticketType == 1 ? "演出票" : "体验票" }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="price" label="价格" align="center"></el-table-column>
-      <el-table-column
-        prop="productCode"
-        label="产品编码"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column prop="stock" label="库存" align="center"></el-table-column>
-      <el-table-column prop="stock" label="状态" align="center">
-        <template #default="scope">
-          <el-switch
-            v-model="scope.row.isDown"
-            active-text="启用"
-            inactive-text="禁用"
-            :active-value="1"
-            :inactive-value="2"
-            @change="handleTicketingStatus(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <!-- <el-table-column prop="stock" label="库存数量" align="center"></el-table-column> -->
-      <el-table-column
-        prop="createdAt"
-        label="创建时间"
-        width="180"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="" label="操作" fixed="right" width="200" align="center">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            link
-            @click="handleEdit(scope.row)"
-            v-has="'ticketList-update'"
-            >编辑</el-button
-          >
-          <el-button
-            type="primary"
-            link
-            @click="handleSetScene(scope.row)"
-            v-has="'ticketList-setScene'"
-            >景点设置</el-button
-          >
-          <el-button
-            type="danger"
-            link
-            @click="handleDelete(scope.row)"
-            v-has="'ticketList-delete'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-
     <!--    创建票务表单    -->
     <el-dialog
       title="创建票务"

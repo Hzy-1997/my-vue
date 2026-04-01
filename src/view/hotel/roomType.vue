@@ -32,53 +32,53 @@
           >创建酒店房型</el-button
         >
       </div>
-    </div>
-    <!-- 展示 -->
-    <el-table :data="roomTypeList" height="calc(100vh - 320px)" style="width: 100%">
-      <el-table-column fixed prop="id" label="ID" width="80" align="center" />
-      <el-table-column prop="name" label="套房名称" align="center" />
-      <el-table-column prop="images" label="套房图片" align="center">
-        <template #default="scope">
-          <el-image
-            :src="imgUrl + scope.row.image"
-            style="width: 100px; height: 60px"
-          ></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column prop="stock" label="套房库存" width="150" align="center" />
-      <el-table-column prop="status" label="状态" align="center">
-        <template #default="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-text="上线"
-            inactive-text="下线"
-            :active-value="1"
-            :inactive-value="2"
-            @change="handleAccountStatus(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" min-width="120" align="center">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click="editClick(scope.row)"
-            v-has="'roomType-update'"
-          >
-            编辑
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            @click="deleteClick(scope.row)"
-            v-has="'roomType-delete'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
 
+      <!-- 展示 -->
+      <el-table :data="roomTypeList" height="calc(100vh - 255px)" style="width: 100%">
+        <el-table-column fixed prop="id" label="ID" width="80" align="center" />
+        <el-table-column prop="name" label="套房名称" align="center" />
+        <el-table-column prop="images" label="套房图片" align="center">
+          <template #default="scope">
+            <el-image
+              :src="imgUrl + scope.row.image"
+              style="width: 100px; height: 60px"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="stock" label="套房库存" width="150" align="center" />
+        <el-table-column prop="status" label="状态" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              active-text="上线"
+              inactive-text="下线"
+              :active-value="1"
+              :inactive-value="2"
+              @change="handleAccountStatus(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" min-width="120" align="center">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              size="small"
+              @click="editClick(scope.row)"
+              v-has="'roomType-update'"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              @click="deleteClick(scope.row)"
+              v-has="'roomType-delete'"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <!-- 创建酒店房型表单 -->
     <el-dialog
       title="创建票务"
