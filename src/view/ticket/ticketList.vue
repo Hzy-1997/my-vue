@@ -100,13 +100,13 @@
               v-has="'ticketList-update'"
               >编辑</el-button
             >
-            <el-button
+            <!-- <el-button
               type="primary"
               link
-              @click="handleSetScene(scope.row)"
+              @click="handleSetPrice(scope.row)"
               v-has="'ticketList-setScene'"
-              >景点设置</el-button
-            >
+              >价格配置</el-button
+            > -->
             <el-button
               type="danger"
               link
@@ -128,7 +128,7 @@
       :close-on-press-escape="false"
     >
       <div class="form-box">
-        <el-form :model="createForm" ref="createFormRef" label-width="120px">
+        <el-form :model="createForm" ref="createFormRef" label-width="130px">
           <el-form-item label="票务名称" prop="title">
             <el-input v-model="createForm.title"></el-input>
           </el-form-item>
@@ -197,15 +197,18 @@
           <el-form-item label="价格" prop="price">
             <el-input v-model="createForm.price"> </el-input>
           </el-form-item>
+          <el-form-item label="折扣价" prop="discountPrice">
+            <el-input
+              v-model="createForm.discountPrice"
+              placeholder="可选，不填则不使用折扣价"
+            >
+            </el-input>
+          </el-form-item>
           <el-form-item label="地址" prop="address">
             <el-input v-model="createForm.address"> </el-input>
           </el-form-item>
           <el-form-item label="库存" prop="stock">
             <el-input v-model="createForm.stock"> </el-input>
-          </el-form-item>
-          <el-form-item label="限制购买数量" prop="ticketNum">
-            <el-input v-model="createForm.ticketNum" placeholder="输入限制购买数量">
-            </el-input>
           </el-form-item>
           <el-form-item label="是否当天下单" prop="isToday">
             <el-switch
@@ -238,6 +241,9 @@
           <el-form-item label="门票有效期" prop="validTime">
             <el-input v-model="createForm.validTime"> </el-input>
           </el-form-item>
+          <el-form-item label="演出时间" prop="showTime">
+            <el-input v-model="createForm.showTime" placeholder="例如：14:00"> </el-input>
+          </el-form-item>
           <el-form-item label="关联座位表" prop="seatId">
             <el-select v-model="createForm.seatId" placeholder="选择关联的座位表">
               <el-option
@@ -249,6 +255,20 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="会员等级限制可购" prop="memberLevel" width="200px">
+            <el-select
+              v-model="createForm.memberLevel"
+              placeholder="请选择会员等级限制可购"
+            >
+              <el-option
+                v-for="item in memberLevelLIst"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
           <el-form-item label="是否支持团购" prop="isGroup">
             <el-switch
               v-model="createForm.isGroup"
@@ -271,6 +291,54 @@
               :inactive-value="2"
             />
           </el-form-item>
+          <el-form-item label="可售卖的未来天数" prop="salePeriod">
+            <el-input-number
+              v-model="createForm.salePeriod"
+              :min="0"
+              :step="1"
+              placeholder="7天"
+            />
+            <span style="margin-left: 10px; color: #999">0表示无限制</span>
+          </el-form-item>
+          <el-form-item label="票务上线时间" prop="onlineTime">
+            <el-date-picker
+              v-model="createForm.onlineTime"
+              type="datetime"
+              placeholder="选择上线时间"
+              style="width: 200px"
+            />
+          </el-form-item>
+          <el-form-item label="售卖开始日期" prop="saleStartDate">
+            <el-date-picker
+              v-model="createForm.saleStartDate"
+              type="date"
+              placeholder="选择开始日期"
+              style="width: 200px"
+            />
+          </el-form-item>
+          <el-form-item label="售卖结束日期" prop="saleEndDate">
+            <el-date-picker
+              v-model="createForm.saleEndDate"
+              type="date"
+              placeholder="选择结束日期"
+              style="width: 200px"
+            />
+          </el-form-item>
+          <el-form-item label="可购最大数量" prop="maxPurchaseQuantity">
+            <el-input-number
+              v-model="createForm.maxPurchaseQuantity"
+              :min="0"
+              :step="1"
+              placeholder="0表示无限购买"
+            />
+            <span style="margin-left: 10px; color: #999">0表示无限购买</span>
+          </el-form-item>
+          <el-form-item label="库存重置类型" prop="stockResetType">
+            <el-radio-group v-model="createForm.stockResetType">
+              <el-radio :value="0" size="large">不重置（预售/总库存模式）</el-radio>
+              <el-radio :value="1" size="large">每日重置（日票模式）</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="演出简介" prop="showIntro">
             <RichTextEditor
               v-model="createForm.showIntro"
@@ -290,12 +358,68 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 票务规则创建 -->
+    <el-dialog
+      title="票务规则创建"
+      v-model="rouleDialogVisible"
+      width="60%"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <div class="form-box">
+        <el-form label-width="100px">
+          <el-form-item label="票务售卖日期" style="width: 500px" align-items="center">
+            <el-date-picker
+              v-model="timeValue"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始售卖日期"
+              end-placeholder="结束售卖日期"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="工作日规则" prop="price" align-items="center">
+            <el-radio-group v-model="ruleForm.ruleConfig.weekday.priceType">
+              <el-radio :value="1" size="large">固定价格</el-radio>
+              <el-radio :value="2" size="large">百分比上涨</el-radio>
+              <el-radio :value="3" size="large">百分比下降</el-radio>
+            </el-radio-group>
+            <el-input v-model="ruleForm.ruleConfig.weekday.priceValue"></el-input>
+          </el-form-item>
+          <el-form-item label="休息日规则" prop="price">
+            <el-radio-group v-model="ruleForm.ruleConfig.weekend.priceType">
+              <el-radio :value="1" size="large">固定价格</el-radio>
+              <el-radio :value="2" size="large">百分比上涨</el-radio>
+              <el-radio :value="3" size="large">百分比下降</el-radio>
+            </el-radio-group>
+            <el-input v-model="ruleForm.ruleConfig.weekend.priceValue"></el-input>
+          </el-form-item>
+          <el-form-item label="节假日规则" prop="price">
+            <el-radio-group v-model="ruleForm.ruleConfig.holiday.priceType">
+              <el-radio :value="1" size="large">固定价格</el-radio>
+              <el-radio :value="2" size="large">百分比上涨</el-radio>
+              <el-radio :value="3" size="large">百分比下降</el-radio>
+            </el-radio-group>
+            <el-input v-model="ruleForm.ruleConfig.holiday.priceValue"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="rouleDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="uploadRules">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import dayjs from "dayjs";
 import ImageUpload from "../../components/ImageUpload/index.vue"; // 组件使用<script setup>自动作为默认导出
 import { ticketingApi, commonApi } from "../../api/index.js";
 import RichTextEditor from "../../components/editor/index.vue";
@@ -307,8 +431,35 @@ const queryForm = ref({
   type: "",
 });
 
+let timeValue = ref([]);
+
+const ruleConfig = () => ({
+  action: "create",
+  ticketId: "",
+  startDate: "",
+  endDate: "",
+  ruleConfig: {
+    weekday: {
+      priceType: 1,
+      priceValue: "",
+    },
+    weekend: {
+      priceType: 1,
+      priceValue: "",
+    },
+    holiday: {
+      priceType: 1,
+      priceValue: "",
+    },
+  },
+  stock: "",
+  status: 1,
+});
+const ruleForm = ref(ruleConfig());
+
 let createFormRef = ref(null);
 let dialogVisible = ref(false);
+let rouleDialogVisible = ref(false);
 
 let category = ref([
   { label: "普通票", value: 1 },
@@ -318,6 +469,16 @@ let category = ref([
   { label: "", value: 4 },
 ]);
 
+//  会员等级
+let memberLevelLIst = ref([
+  { label: "普通会员", value: 1 },
+  { label: "白银会员", value: 2 },
+  { label: "黄金会员", value: 3 },
+  { label: "白金会员", value: 4 },
+  { label: "钻石会员", value: 5 },
+  { label: "金卡会员", value: 6 },
+]);
+
 const getInitialFormData = () => ({
   title: "欢乐票",
   productCode: "123qwe123qwe", // 产品编码
@@ -325,23 +486,30 @@ const getInitialFormData = () => ({
   startTime: "16:00", // 开始购买时间
   address: "不知道", // 地址
   price: 199, // 价格
+  discountPrice: 0, // 折扣价
   banners: [], // 轮播图
   homeImg: [], // 封面图
   isRecommended: 1, // 是否推荐
   typeDescription: [], // 类型描述
   category: "", // 分类
   ticketType: "0", // 票务类型
-  showTime: "90", // 演出时间   ----
+  showTime: "90", // 演出时间
   showDuration: "90", // 演出时长
   validTime: "30", // 有效时间
   showIntro: "", // 演出简介
-  ticketNum: 0, // 限制购买数量
   isToday: 1, // 是否当天
   isDown: 1, // 是否下架
   isSeat: 1, // 是否有座位
   isGroup: 1, // 是否拼团
   isRefund: 1, // 是否退款
   seatId: "", // 座位图id
+  salePeriod: 7, // 可售卖的未来天数
+  onlineTime: null, // 票务上线时间
+  saleStartDate: null, // 售卖开始日期
+  saleEndDate: null, // 售卖结束日期
+  maxPurchaseQuantity: 0, // 票种可购买的最大数量
+  stockResetType: 0, // 库存重置类型
+  memberLevel: 1, // 会员等级限制可购
 });
 
 let createForm = ref(getInitialFormData());
@@ -476,10 +644,14 @@ const handleSubmit = async () => {
     ...createForm.value,
     price: Number(createForm.value.price),
     stock: Number(createForm.value.stock),
-    ticketNum: Number(createForm.value.ticketNum),
-    typeDescription: Array.isArray(createForm.value.typeDescription)
+    typeDescription: Array.isArray(createForm.value.typeDescription) 
       ? createForm.value.typeDescription.join(",")
       : createForm.value.typeDescription,
+    ticketType: Number(createForm.value.ticketType), 
+    discountPrice: Number(createForm.value.discountPrice),
+    onlineTime: dayjs(createForm.value.onlineTime).format("YYYY-MM-DD HH:mm:ss"),
+    saleEndDate: dayjs(createForm.value.saleEndDate).format("YYYY-MM-DD"),
+    saleStartDate: dayjs(createForm.value.saleStartDate).format("YYYY-MM-DD"),
   };
   console.log("提交字段", data);
 
@@ -609,6 +781,24 @@ const handleTicketingStatus = (row) => {
         row.isDown = 1;
       }
     });
+};
+
+// 价格配置
+const handleSetPrice = (row) => {
+  console.log(row);
+  ruleForm.value.ticketId = row.id;
+  ruleForm.value.stock = row.stock;
+
+  rouleDialogVisible.value = true;
+};
+
+//提交价格规则
+const uploadRules = async () => {
+  ruleForm.value.startDate = dayjs(timeValue.value[0]).format("YYYY-MM-DD");
+  ruleForm.value.endDate = dayjs(timeValue.value[1]).format("YYYY-MM-DD");
+  console.log(ruleForm.value);
+  let res = await ticketingApi.operatePrice(ruleForm.value);
+  console.log("提交状态", res);
 };
 </script>
 
