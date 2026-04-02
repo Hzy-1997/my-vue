@@ -27,7 +27,10 @@
         <el-table-column prop="title" label="攻略名称"></el-table-column>
         <el-table-column prop="type" label="图片" align="center">
           <template #default="scope">
-            <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
+            <el-image
+              :src="imgUrl + scope.row.cover"
+              style="width: 110px; height: 80px"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="createBy" label="创建人"></el-table-column>
@@ -52,6 +55,13 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <Pagination
+      :pagination="pagination"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    />
+
     <!-- 创建 弹窗 -->
     <el-dialog
       title="创建攻略"
@@ -97,15 +107,18 @@
 <script setup>
 import { reactive, ref, onMounted, nextTick } from "vue";
 import ImageUpload from "../../components/ImageUpload/index.vue";
+import Pagination from "../../components/pagination/pagination.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Editor from "../../components//editor/index.vue";
 import { projectApi, commonApi } from "../../api/index.js";
 import { useStorage } from "../../store/storage.js";
+
 // 搜索
 const queryForm = ref({
   title: "",
 });
 const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
+
 const tableData = ref([]);
 // 表单实例
 const formRef = ref(null);
@@ -127,8 +140,12 @@ const formData = ref({
   content: "",
 });
 
-const page = 1;
-const pageSize = 10;
+// 分页
+let pagination = ref({
+  page: 1,
+  pageSize: 10,
+  total: 0,
+});
 
 const dialogVisible = ref(false);
 
@@ -144,12 +161,12 @@ const getStrategyList = async () => {
   try {
     let res = await projectApi.strategyList({
       title: queryForm.value.title,
-      page,
-      pageSize,
+      page: pagination.value.page,
+      pageSize: pagination.value.pageSize,
     });
     if (res.code === 200) {
       tableData.value = res.data.rows;
-      console.log("列表数据", tableData.value);
+      pagination.value.total = res.data.count;
     }
   } catch (error) {}
 };
@@ -295,6 +312,17 @@ const getUrlParams = () => {
     totalAmount,
     timestamp,
   });
+};
+
+// 分页管理
+const handleSizeChange = (val) => {
+  console.log("什么东西1", val);
+};
+
+const handleCurrentChange = (val) => {
+  console.log("什么东西2", val);
+  pagination.value.page = val; // 当前页
+  getStrategyList(); // 重新获取数据
 };
 </script>
 

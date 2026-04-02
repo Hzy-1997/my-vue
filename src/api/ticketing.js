@@ -6,6 +6,14 @@
  * @最后编辑者: sueRimn
  * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
  */
+/*
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+ */
 import request from "../utils/request.js"
 
 // 票务操作
@@ -40,6 +48,15 @@ export const getSeatList = (data) => {
     return request({
         url: '/ticket/getSeatList',
         method: 'get',
+        data
+    })
+}
+
+// 票务价格配置
+export const operatePrice = (data) => {
+    return request({
+        url: '/ticket/operatePrice',
+        method: 'post',
         data
     })
 }
