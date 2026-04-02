@@ -37,78 +37,83 @@
     <!--  创建 展示 -->
     <div class="base-table">
       <div class="action"></div>
-    </div>
-    <!-- 表格展示 -->
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      style="width: 100%"
-      height="calc(100vh - 285px)"
-      :row-style="{ height: '55px' }"
-    >
-      <el-table-column
-        prop="orderNumber"
-        label="订单编号"
-        width="265"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
-      <!-- <el-table-column prop="type" label="图片" align="center">
+
+      <!-- 表格展示 -->
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        style="width: 100%"
+        height="calc(100vh - 255px)"
+        :row-style="{ height: '55px' }"
+      >
+        <el-table-column
+          prop="orderNumber"
+          label="订单编号"
+          width="265"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
+        <!-- <el-table-column prop="type" label="图片" align="center">
         <template #default="scope">
           <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
         </template>
       </el-table-column> -->
-      <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
-      <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
-      <el-table-column
-        prop="userIdCard"
-        width="200"
-        label="身份证号"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="playDate" label="游玩日期" align="center"></el-table-column>
-      <el-table-column
-        prop="ticketPrice"
-        label="票务单价"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
-      <el-table-column
-        prop="orderAmount"
-        label="付款金额"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="refundAmount"
-        label="退款金额"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="orderStatus" label="订单状态" align="center">
-        <template #default="scope">
-          <el-tag :type="getOrderStatusType(scope.row.orderStatus)">
-            {{ getOrderStatusText(scope.row.orderStatus) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="verifyStatus" label="核销状态" align="center">
-        <template #default="scope">
-          <el-tag :type="getOrderStatusType(scope.row.verifyStatus)">
-            {{ getVerifyStatusText(scope.row.verifyStatus) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="" label="操作" fixed="right">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            link
-            @click="handleRefund(scope.row)"
-            v-has="'order-refund'"
-            >退款</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
+        <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
+        <el-table-column
+          prop="userIdCard"
+          width="200"
+          label="身份证号"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="playDate"
+          label="游玩日期"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="ticketPrice"
+          label="票务单价"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
+        <el-table-column
+          prop="orderAmount"
+          label="付款金额"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="refundAmount"
+          label="退款金额"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="orderStatus" label="订单状态" align="center">
+          <template #default="scope">
+            <el-tag :type="getOrderStatusType(scope.row.orderStatus)">
+              {{ getOrderStatusText(scope.row.orderStatus) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="verifyStatus" label="核销状态" align="center">
+          <template #default="scope">
+            <el-tag :type="getOrderStatusType(scope.row.verifyStatus)">
+              {{ getVerifyStatusText(scope.row.verifyStatus) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="" label="操作" fixed="right">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              link
+              @click="handleRefund(scope.row)"
+              v-has="'order-refund'"
+              >退款</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <!-- 翻页 -->
     <div class="table-pagination">
       <Pagination

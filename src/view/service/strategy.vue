@@ -20,39 +20,38 @@
           >创建攻略</el-button
         >
       </div>
+
+      <!-- 表格展示 -->
+      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
+        <el-table-column prop="id" label="id" width="50"></el-table-column>
+        <el-table-column prop="title" label="攻略名称"></el-table-column>
+        <el-table-column prop="type" label="图片" align="center">
+          <template #default="scope">
+            <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="createBy" label="创建人"></el-table-column>
+        <el-table-column prop="time" label="创建时间"></el-table-column>
+        <el-table-column prop="" label="操作">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              link
+              @click="handleEdit(scope.row)"
+              v-has="'strategy-update'"
+              >编辑</el-button
+            >
+            <el-button
+              type="danger"
+              link
+              @click="handleDelete(scope.row)"
+              v-has="'strategy-delete'"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-
-    <!-- 表格展示 -->
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="id" label="id" width="50"></el-table-column>
-      <el-table-column prop="title" label="攻略名称"></el-table-column>
-      <el-table-column prop="type" label="图片" align="center">
-        <template #default="scope">
-          <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
-        </template>
-      </el-table-column>
-      <el-table-column prop="createBy" label="创建人"></el-table-column>
-      <el-table-column prop="time" label="创建时间"></el-table-column>
-      <el-table-column prop="" label="操作">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            link
-            @click="handleEdit(scope.row)"
-            v-has="'strategy-update'"
-            >编辑</el-button
-          >
-          <el-button
-            type="danger"
-            link
-            @click="handleDelete(scope.row)"
-            v-has="'strategy-delete'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-
     <!-- 创建 弹窗 -->
     <el-dialog
       title="创建攻略"

@@ -89,12 +89,12 @@ const storage = useStorage();
 //   msg: String,
 // });
 const loginData = ref({
-  // account: "admin",
-  // userPwd: "Hzy=1997+97",
+  account: "admin",
+  userPwd: "Hzy=1997+97",
   uuid: "",
   code: "",
-  account: "",
-  userPwd: "",
+  // account: "",
+  // userPwd: "",
 });
 
 const rules = ref({

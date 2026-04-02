@@ -15,54 +15,56 @@
           >创建酒店</el-button
         >
       </div>
+
+      <!-- 表格展示 -->
+      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
+        <el-table-column fixed prop="id" label="ID" width="50" align="center" />
+        <el-table-column prop="title" label="酒店名称" width="200" align="center" />
+        <el-table-column prop="state" label="封面图" width="200" align="center">
+          <template #default="scope">
+            <el-image
+              :src="imgUrl + scope.row.images"
+              style="width: 100px; height: 60px"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="服务电话" align="center" />
+        <el-table-column prop="openingTime" label="开业时间" align="center" />
+        <el-table-column prop="address" label="酒店地址" align="center" />
+        <el-table-column prop="status" label="状态" width="200" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              active-text="上线"
+              inactive-text="下线"
+              :active-value="1"
+              :inactive-value="2"
+              @change="handleAccountStatus(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="created_at" label="创建时间" align="center" />
+        <el-table-column fixed="right" label="操作" min-width="120" align="center">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              size="small"
+              @click="editClick(scope.row)"
+              v-has="'hotel-update'"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              @click="deleteClick(scope.row)"
+              v-has="'hotel-delete'"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-
-    <!-- 表格展示 -->
-    <el-table :data="tableData" height="calc(100vh - 320px)" style="width: 100%">
-      <el-table-column fixed prop="id" label="ID" width="50" align="center" />
-      <el-table-column prop="title" label="酒店名称" width="200" align="center" />
-      <el-table-column prop="state" label="封面图" width="200" align="center">
-        <template #default="scope">
-          <el-image :src="imgUrl + scope.row.images" style="width: 100px; height: 60px" />
-        </template>
-      </el-table-column>
-      <el-table-column prop="phone" label="服务电话" align="center" />
-      <el-table-column prop="openingTime" label="开业时间" align="center" />
-      <el-table-column prop="address" label="酒店地址" align="center" />
-      <el-table-column prop="status" label="状态" width="200" align="center">
-        <template #default="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-text="上线"
-            inactive-text="下线"
-            :active-value="1"
-            :inactive-value="2"
-            @change="handleAccountStatus(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column prop="created_at" label="创建时间" align="center" />
-      <el-table-column fixed="right" label="操作" min-width="120" align="center">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click="editClick(scope.row)"
-            v-has="'hotel-update'"
-          >
-            编辑
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            @click="deleteClick(scope.row)"
-            v-has="'hotel-delete'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-
     <!-- 表单 -->
     <el-dialog
       title="创建酒店"
@@ -214,13 +216,12 @@
         </span>
       </template>
     </el-dialog>
-    <div class="table-pagination">
-      <Pagination
-        :pagination="pagination"
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-      />
-    </div>
+
+    <Pagination
+      :pagination="pagination"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    />
   </div>
 </template>
 

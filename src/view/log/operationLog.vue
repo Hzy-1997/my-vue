@@ -11,100 +11,81 @@
 
     <div class="base-table">
       <div class="action"></div>
+
+      <!-- 表格展示 -->
+      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
+        <el-table-column prop="id" label="操作日志ID" align="center"></el-table-column>
+
+        <el-table-column prop="title" label="功能名称" align="center"></el-table-column>
+
+        <el-table-column
+          prop="businessType"
+          label="操作类型"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column
+          prop="requestMethod"
+          label="请求方式"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column
+          prop="operatorName"
+          label="操作人员姓名"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column
+          prop="operatorType"
+          label="操作人员类型"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column
+          prop="operIp"
+          label="操作IP地址"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="status" label="操作状态" align="center">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
+              {{ scope.row.status === 0 ? "成功" : "失败" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="createdAt"
+          label="操作时间"
+          align="center"
+          width="230"
+        ></el-table-column>
+
+        <el-table-column prop="costTime" label="耗时" align="center">
+          <template #default="scope"> {{ scope.row.costTime }} ms </template>
+        </el-table-column>
+
+        <el-table-column fixed="right" label="操作" min-width="120" align="center">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              size="small"
+              :icon="Search"
+              @click="editClick(scope.row)"
+            >
+              查看详细
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
 
-    <!-- 表格展示 -->
-    <el-table
-      :data="tableData"
-      height="calc(100vh - 285px)"
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="id"
-        label="操作日志ID"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="title"
-        label="功能名称"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="businessType"
-        label="操作类型"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="requestMethod"
-        label="请求方式"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="operatorName"
-        label="操作人员姓名"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="operatorType"
-        label="操作人员类型"
-        align="center"
-      ></el-table-column>
-
-      <el-table-column
-        prop="operIp"
-        label="操作IP地址"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="status" label="操作状态" align="center">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
-            {{ scope.row.status === 0 ? "成功" : "失败" }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        prop="createdAt"
-        label="操作时间"
-        align="center"
-        width="230"
-      ></el-table-column>
-
-      <el-table-column prop="costTime" label="耗时" align="center">
-        <template #default="scope"> {{ scope.row.costTime }} ms </template>
-      </el-table-column>
-
-      <el-table-column
-        fixed="right"
-        label="操作"
-        min-width="120"
-        align="center"
-      >
-        <template #default="scope">
-          <el-button
-            type="primary"
-            size="small"
-            :icon="Search"
-            @click="editClick(scope.row)"
-          >
-            查看详细
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div class="table-pagination">
-      <Pagination
-        :pagination="pagination"
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-      />
-    </div>
+    <Pagination
+      :pagination="pagination"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    />
 
     <el-dialog
       title="操作日志详情"
@@ -150,9 +131,7 @@
         <div class="info-row">
           <div class="info-item full-width">
             <span class="info-label">请求方式：</span>
-            <span class="info-value highlight">{{
-              detailData.requestMethod
-            }}</span>
+            <span class="info-value highlight">{{ detailData.requestMethod }}</span>
           </div>
         </div>
 
@@ -178,9 +157,7 @@
             <span class="info-label">操作状态：</span>
             <span
               class="info-value"
-              :class="
-                detailData.status === 0 ? 'status-success' : 'status-failed'
-              "
+              :class="detailData.status === 0 ? 'status-success' : 'status-failed'"
             >
               {{ detailData.status === 0 ? "成功" : "失败" }}
             </span>
@@ -309,7 +286,7 @@ const handleCurrentChange = (val) => {
 
 .info-row {
   display: flex;
- 
+
   margin-bottom: 20px;
   border-bottom: 1px solid #f0f0f0;
   /* padding-bottom: 16px; */

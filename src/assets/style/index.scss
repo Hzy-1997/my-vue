@@ -121,15 +121,20 @@ a {
     .action {
         border-radius: 5px 5px 0px 0px;
         background: #ffffff;
-        padding: 20px;
+        padding: 10px;
         border-bottom: 1px solid #ece8e8;
-        margin-top: 20px;
+        margin-top: 10px;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
     }
 
     .pagination {
         text-align: right;
         padding: 10px;
     }
+
+
 }
 
 .table-img {
@@ -145,10 +150,10 @@ a {
     box-sizing: border-box;
 }
 
-.table-pagination {
-    margin: 0 auto;
-    margin-top: 43px;
-}
+// .table-pagination {
+//     margin: 0 auto;
+//     margin-top: 43px;
+// }
 
 .form-box {
     max-height: 600px;

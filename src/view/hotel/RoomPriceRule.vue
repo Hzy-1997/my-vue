@@ -31,58 +31,76 @@
           >创建房型套餐</el-button
         >
       </div>
+
+      <!-- 表格展示 -->
+      <el-table
+        v-loading="loading"
+        height="calc(100vh - 255px)"
+        :data="ticketList"
+        style="width: 100%"
+      >
+        <el-table-column type="index" label="排序" width="100" align="center" />
+        <!-- <el-table-column prop="id" label="ID" width="80px"></el-table-column> -->
+        <el-table-column
+          prop="name"
+          label="房型套餐名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="type" label="酒店名称" align="center">
+          <template #default="scope">
+            <span>{{ scope.row.roomType.hotel.title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="price" label="价格" align="center"></el-table-column>
+        <el-table-column
+          prop="startDate"
+          label="套餐开始日期"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="endDate"
+          label="套餐结束日期"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="createdAt"
+          label="创建时间"
+          align="center"
+        ></el-table-column>
+
+        <el-table-column
+          fixed="right"
+          prop=""
+          label="操作"
+          min-width="120"
+          align="center"
+        >
+          <template #default="scope">
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleConfigPrice(scope.row)"
+              v-has="'RoomPriceRule-config'"
+              >配置价格规则</el-button
+            >
+            <el-button
+              type="primary"
+              size="small"
+              @click="handleEdit(scope.row)"
+              v-has="'RoomPriceRule-update'"
+              >编辑</el-button
+            >
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(scope.row)"
+              v-has="'RoomPriceRule-delete'"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-
-    <!-- 表格展示 -->
-    <el-table v-loading="loading" :data="ticketList" style="width: 100%">
-      <el-table-column type="index" label="排序" width="100" align="center" />
-      <!-- <el-table-column prop="id" label="ID" width="80px"></el-table-column> -->
-      <el-table-column prop="name" label="房型套餐名称" align="center"></el-table-column>
-      <el-table-column prop="type" label="酒店名称" align="center">
-        <template #default="scope">
-          <span>{{ scope.row.roomType.hotel.title }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="price" label="价格" align="center"></el-table-column>
-      <el-table-column
-        prop="startDate"
-        label="套餐开始日期"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="endDate"
-        label="套餐结束日期"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" align="center"></el-table-column>
-
-      <el-table-column fixed="right" prop="" label="操作" min-width="120" align="center">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleConfigPrice(scope.row)"
-            v-has="'RoomPriceRule-config'"
-            >配置价格规则</el-button
-          >
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleEdit(scope.row)"
-            v-has="'RoomPriceRule-update'"
-            >编辑</el-button
-          >
-          <el-button
-            type="danger"
-            size="small"
-            @click="handleDelete(scope.row)"
-            v-has="'RoomPriceRule-delete'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-
     <!-- 创建房型套餐 -->
     <el-dialog
       :title="action === 'create' ? '创建房型套餐' : '更新房型套餐'"
