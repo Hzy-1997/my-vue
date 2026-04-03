@@ -19,7 +19,6 @@ export function checkPermission(permission, menuList, actionList) {
 
     // 检查actionList中的权限
     if (actionList && actionList.includes(permission)) {
-        console.log("有没有权限")
         return true
     }
 
@@ -54,8 +53,6 @@ export function checkPermission(permission, menuList, actionList) {
  */
 export const permissionDirective = {
     mounted(el, binding) {
-        console.log("指令绑定的值", binding.value)
-        console.log("指令元素", el)
         const storage = useStorage()
         const menuList = storage.menuList
         const actionList = menuList.actionList
@@ -80,10 +77,8 @@ export const permissionDirective = {
         const hasPermission = checkPermission(permission, menuList, actionList)
 
         if (!hasPermission) {
-            console.log("没有权限，隐藏元素")
             el.style.display = 'none'
         } else {
-            console.log("有权限，显示元素")
             el.style.display = ''
         }
     }
