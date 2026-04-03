@@ -46,7 +46,7 @@
           <template #default="scope">
             <el-image
               :src="imgUrl + scope.row.homeImg"
-              style="width: 50px; height: 50px"
+              style="width: 100px; height: 70px"
             />
           </template>
         </el-table-column>
@@ -118,6 +118,13 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <Pagination
+      :pagination="pagination"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    />
+
     <!--    创建票务表单    -->
     <el-dialog
       title="创建票务"
@@ -423,12 +430,20 @@ import dayjs from "dayjs";
 import ImageUpload from "../../components/ImageUpload/index.vue"; // 组件使用<script setup>自动作为默认导出
 import { ticketingApi, commonApi } from "../../api/index.js";
 import RichTextEditor from "../../components/editor/index.vue";
+import Pagination from "../../components/pagination/pagination.vue";
 
 const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
 
 const queryForm = ref({
   title: "",
   type: "",
+});
+
+// 分页参数
+const pagination = ref({
+  pageNum: 1,
+  pageSize: 10,
+  total: 0,
 });
 
 let timeValue = ref([]);
@@ -542,8 +557,23 @@ onMounted(() => {
 
 // 票务列表
 let handleMenuList = async () => {
-  let res = await ticketingApi.ticketList();
+  let res = await ticketingApi.ticketList({
+    pageNum: pagination.value.pageNum,
+    pageSize: pagination.value.pageSize,
+    ...queryForm.value,
+  });
   ticketList.value = res.data.list;
+  pagination.value.total = res.data.count;
+};
+
+// 分页管理
+const handleSizeChange = (val) => {
+  console.log("什么东西1", val);
+};
+
+const handleCurrentChange = (val) => {
+  pagination.value.pageNum = val; // 当前页
+  handleMenuList();
 };
 
 // 获取座位列表
@@ -640,19 +670,21 @@ const handleSubmit = async () => {
   }
 
   console.log(createForm.value.typeDescription);
+
   let data = {
     ...createForm.value,
     price: Number(createForm.value.price),
     stock: Number(createForm.value.stock),
-    typeDescription: Array.isArray(createForm.value.typeDescription) 
+    typeDescription: Array.isArray(createForm.value.typeDescription)
       ? createForm.value.typeDescription.join(",")
       : createForm.value.typeDescription,
-    ticketType: Number(createForm.value.ticketType), 
+    ticketType: Number(createForm.value.ticketType),
     discountPrice: Number(createForm.value.discountPrice),
     onlineTime: dayjs(createForm.value.onlineTime).format("YYYY-MM-DD HH:mm:ss"),
     saleEndDate: dayjs(createForm.value.saleEndDate).format("YYYY-MM-DD"),
     saleStartDate: dayjs(createForm.value.saleStartDate).format("YYYY-MM-DD"),
   };
+
   console.log("提交字段", data);
 
   let res = await ticketingApi.ticketOperate(data);
