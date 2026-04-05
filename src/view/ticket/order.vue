@@ -49,7 +49,7 @@
         <el-table-column
           prop="orderNumber"
           label="订单编号"
-          width="265"
+          width="280"
           align="center"
         ></el-table-column>
         <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
