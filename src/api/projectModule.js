@@ -1,7 +1,7 @@
 
 import request from "../utils/request.js"
 
-// 策略功能操作
+// 攻略功能操作
 export const strategyOperate = (data) => {
     return request({
         url: "/strategy/strategyOperate",
@@ -9,7 +9,8 @@ export const strategyOperate = (data) => {
         data
     })
 }
-export const strategyList = (data) => {
+// 票务核销员列表
+export const writeOffList = (data) => {
     return request({
         url: "/strategy/strategyList",
         method: "get",
