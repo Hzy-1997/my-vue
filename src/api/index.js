@@ -21,6 +21,7 @@ import * as projectApi from './projectModule';
 import * as hotelApi from './hotel';
 import * as paymentApi from './payment';
 import * as logApi from './log';
+import * as writeOffApi from './WriteOff';
 
 
 
@@ -38,5 +39,6 @@ export {
     projectApi,
     hotelApi,
     paymentApi,
-    logApi
+    logApi,
+    writeOffApi
 };
