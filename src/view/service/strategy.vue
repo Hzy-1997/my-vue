@@ -164,11 +164,14 @@ const getStrategyList = async () => {
       page: pagination.value.page,
       pageSize: pagination.value.pageSize,
     });
+    console.log("获取攻略数据", res);
     if (res.code === 200) {
       tableData.value = res.data.rows;
       pagination.value.total = res.data.count;
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // 查询

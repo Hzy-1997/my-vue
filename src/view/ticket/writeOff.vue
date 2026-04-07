@@ -16,84 +16,74 @@
       </div>
       <!-- 表格展示 -->
       <el-table
-        :data="tableData"
+        v-loading="loading"
+        :data="writeOffList"
         height="calc(100vh - 255px)"
         style="width: 100%"
       >
+        <el-table-column prop="id" label="ID" align="center"></el-table-column>
         <el-table-column
-          prop="id"
-          label="操作日志ID"
+          prop="name"
+          label="核销员姓名"
+          width="120"
           align="center"
         ></el-table-column>
 
         <el-table-column
-          prop="title"
-          label="功能名称"
+          prop="phone"
+          label="核销员手机号"
+          width="220"
           align="center"
         ></el-table-column>
 
         <el-table-column
-          prop="businessType"
-          label="操作类型"
+          prop="todayWriteOff"
+          label="核销次数"
+          width="120"
           align="center"
         ></el-table-column>
 
         <el-table-column
-          prop="requestMethod"
-          label="请求方式"
+          prop="lastWriteOffTime"
+          label="末次核销时间"
+          width="220"
           align="center"
         ></el-table-column>
 
         <el-table-column
-          prop="operatorName"
-          label="操作人员姓名"
+          prop="operator"
+          label="创建人"
+          width="200"
           align="center"
         ></el-table-column>
-
-        <el-table-column
-          prop="operatorType"
-          label="操作人员类型"
-          align="center"
-        ></el-table-column>
-
-        <el-table-column
-          prop="operIp"
-          label="操作IP地址"
-          align="center"
-        ></el-table-column>
-        <el-table-column prop="status" label="操作状态" align="center">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 0 ? 'success' : 'danger'">
-              {{ scope.row.status === 0 ? "成功" : "失败" }}
-            </el-tag>
-          </template>
-        </el-table-column>
 
         <el-table-column
           prop="createdAt"
-          label="操作时间"
+          label="创建时间"
+          width="220"
           align="center"
-          width="230"
         ></el-table-column>
 
-        <el-table-column prop="costTime" label="耗时" align="center">
-          <template #default="scope"> {{ scope.row.costTime }} ms </template>
+        <el-table-column prop="status" label="状态" align="center" width="230">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="2"
+              active-text="启用"
+              inactive-text="禁用"
+              @change="handleStatusChange(scope.row)"
+            />
+          </template>
         </el-table-column>
 
-        <el-table-column
-          fixed="right"
-          label="操作"
-          min-width="120"
-          align="center"
-        >
+        <el-table-column fixed="right" label="操作" min-width="120" align="center">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              :icon="Search"
-              @click="editClick(scope.row)"
-            >
-              查看详细
+            <el-button type="primary" link @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button type="danger" link @click="handleDelete(scope.row)">
+              删除
             </el-button>
           </template>
         </el-table-column>
@@ -117,12 +107,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
     >
-      <el-form
-        :model="writeOffForm"
-        ref="ruleFormRef"
-        :rules="rules"
-        label-width="80px"
-      >
+      <el-form :model="writeOffForm" ref="ruleFormRef" :rules="rules" label-width="80px">
         <!-- 姓名 -->
         <el-form-item label="姓名" prop="name">
           <el-input v-model="formData.name" placeholder="请输入核销员姓名" />
@@ -154,7 +139,8 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import RichTextEditor from "../service/strategy.vue";
+import dayjs from "dayjs";
+import { ElMessage, ElMessageBox } from "element-plus";
 import Pagination from "../../components/pagination/pagination.vue";
 import { commonApi, writeOffApi } from "../../api/index.js";
 
@@ -173,6 +159,7 @@ const pagination = ref({
 const writeOffList = ref([]);
 
 const dialogVisible = ref(false);
+const loading = ref(false);
 
 const writeOffForm = () => ({
   name: "",
@@ -183,71 +170,34 @@ const writeOffForm = () => ({
 
 const formData = ref(writeOffForm());
 
-const tableData = ref([]);
-
-// 编辑器模式
-const editMode = ref("edit");
-// 编辑器内容
-const editorContent = ref("nihao");
-// 初始图片列表
-const initialImages = ref([]);
-// 保留的图片列表
-const retainedImages = ref([]);
-
-// 处理图片上传
-const handleImageUpload = async (file, insertFn) => {
-  console.log("上传图片:", file);
-  const formData = new FormData();
-  formData.append("file", file); // file 是用户选择的图片文件
-  try {
-    let res = await commonApi.uploadImg(formData);
-    if (res.code !== 200) {
-      alert("上传失败: " + res.message);
-      return;
-    }
-    const imgUrl = res.data.file.url;
-    // 调用 insertFn 将图片插入到编辑器
-    initialImages.value.push(imgUrl);
-    insertFn(imgUrl, "");
-  } catch (error) {
-    console.error("上传图片时出错:", error);
-    alert("上传图片失败，请重试");
-  }
-};
-
-const handleContentChange = (data) => {
-  console.log("编辑器内容:", data.content);
-  console.log("当前图片:", data.editorImgList);
-  editorContent.value = data.content;
-  retainedImages.value = data.editorImgList;
-};
-
-// 处理提交
-const handleSave = (data) => {
-  console.log("编辑器内容:", data.content);
-  console.log("当前图片:", data.editorImgList);
-};
-
 onMounted(() => {
   getWriteOffList();
 });
 
 // 获取核销员列表
 const getWriteOffList = async () => {
+  loading.value = true;
   let res = await writeOffApi.getWriteOffList({
     page: pagination.value.currentPage,
     pageSize: pagination.value.pageSize,
+    ...queryForm.value,
   });
   if (res.code == 200) {
     console.log(res.data);
+    res.data.rows.forEach((item) => {
+      item.lastWriteOffTime = dayjs(item.lastWriteOffTime).format("YYYY-MM-DD HH:mm:ss");
+    });
     writeOffList.value = res.data.rows;
     pagination.value.total = res.data.count;
   }
+  writeOffList.value = res.data.rows;
+  pagination.value.total = res.data.count;
+  loading.value = false;
 };
 
 //查询
 const handleQuery = () => {
-  console.log("查询", queryForm.value);
+  getWriteOffList();
 };
 
 // 重置
@@ -255,6 +205,7 @@ const handleReset = () => {
   queryForm.value = {
     phone: "",
   };
+  getWriteOffList();
 };
 
 const handleAdd = () => {
@@ -264,9 +215,69 @@ const handleAdd = () => {
 
 const handleSubmit = async () => {
   let res = await writeOffApi.writeOffOperate(formData.value);
-  console.log("主管那台", res);
-  getWriteOffList();
-  dialogVisible.value = false;
+  if (res.code == 200) {
+    ElMessage.success(res.message);
+    getWriteOffList();
+    dialogVisible.value = false;
+  } else {
+    ElMessage.error(res.message);
+  }
+};
+
+// 修改状态
+const handleStatusChange = (row) => {
+  ElMessageBox.confirm("确定要修改账户状态吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      console.log("修改状态", row);
+      formData.value = { ...row };
+      formData.value.action = "update";
+      let res = await writeOffApi.writeOffOperate(formData.value);
+      if (res.code == 200) {
+        ElMessage.success("修改成功");
+        getWriteOffList();
+      } else {
+        ElMessage.error("操作失败");
+      }
+    })
+    .catch(() => {
+      if (row.status == 1) {
+        row.status = 2;
+      } else {
+        row.status = 1;
+      }
+    });
+};
+
+// 编辑
+const handleEdit = (row) => {
+  formData.value = { ...row };
+  formData.value.action = "update";
+  dialogVisible.value = true;
+};
+
+// 删除
+const handleDelete = (row) => {
+  ElMessageBox.confirm("确定要删除吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      formData.value = { ...row };
+      formData.value.action = "delete";
+      let res = await writeOffApi.writeOffOperate(formData.value);
+      if (res.code == 200) {
+        ElMessage.success("删除成功");
+        getWriteOffList();
+      } else {
+        ElMessage.error("删除失败");
+      }
+    })
+    .catch(() => {});
 };
 </script>
 

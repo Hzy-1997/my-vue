@@ -9,8 +9,8 @@ export const strategyOperate = (data) => {
         data
     })
 }
-// 票务核销员列表
-export const writeOffList = (data) => {
+// 攻略列表
+export const strategyList = (data) => {
     return request({
         url: "/strategy/strategyList",
         method: "get",

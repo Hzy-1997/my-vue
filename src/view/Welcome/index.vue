@@ -365,6 +365,7 @@ onUnmounted(() => {
   }
   if (myChart) {
     myChart.dispose();
+    myChart1.dispose();
   }
 });
 </script>
