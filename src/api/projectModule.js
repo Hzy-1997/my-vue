@@ -1,5 +1,5 @@
 
-import request from "../utils/request.js"
+import { request } from "../utils/request.js";
 
 // 攻略功能操作
 export const strategyOperate = (data) => {

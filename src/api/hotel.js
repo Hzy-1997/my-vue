@@ -6,7 +6,7 @@
  * @最后编辑者: sueRimn
  * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
  */
-import request from "../utils/request.js"
+import { request } from "../utils/request.js";
 
 // 酒店操作接口
 export const hotelOperation = (data) => {

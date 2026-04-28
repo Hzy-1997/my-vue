@@ -21,17 +21,75 @@
     />
 
     <div class="query-form">
-      <div class="title">票务订单</div>
-      <div class="query-item">
-        <el-input placeholder="请输入订单号" v-model="queryForm.outTradeNo"></el-input>
-        <el-input placeholder="请输入手机号" v-model="queryForm.userPhone"></el-input>
-        <el-input placeholder="请输入身份证号" v-model="queryForm.userIdCard"></el-input>
-        <el-button type="primary" @click="handleQuery">
-          <el-icon><Search /></el-icon>查询</el-button
-        >
-        <el-button @click="handleReset">
-          <el-icon><RefreshLeft /></el-icon>重置</el-button
-        >
+      <div class="form-box">
+        <div class="form-content">
+          <div class="title" style="width: 70px; margin-right: 5px">票务订单</div>
+          <div class="query-item">
+            <el-input
+              style="width: 200px"
+              placeholder="请输入订单号"
+              v-model="queryForm.outTradeNo"
+            ></el-input>
+            <el-input
+              style="width: 200px"
+              placeholder="请输入手机号"
+              v-model="queryForm.userPhone"
+            ></el-input>
+            <el-input
+              style="width: 200px"
+              placeholder="请输入身份证号"
+              v-model="queryForm.userIdCard"
+            ></el-input>
+
+            <el-select
+              v-model="queryForm.ticketType"
+              placeholder="选择票种"
+              style="width: 180px; margin-right: 20px"
+              clearable
+            >
+              <el-option
+                v-for="item in titleOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+
+            <el-select
+              v-model="queryForm.orderStatus"
+              placeholder="订单状态"
+              style="width: 180px; margin-right: 20px"
+              clearable
+            >
+              <el-option
+                v-for="item in orderOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+
+            <el-date-picker
+              style="width: 240px"
+              v-model="dateRange"
+              type="daterange"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            />
+
+            <el-button type="primary" @click="handleQuery">
+              <el-icon><Search /></el-icon>查询</el-button
+            >
+            <el-button @click="handleReset">
+              <el-icon><RefreshLeft /></el-icon>重置</el-button
+            >
+          </div>
+        </div>
+        <div class="export-btn">
+          <el-button type="primary" @click="handleExportExcel">导出Excel</el-button>
+        </div>
       </div>
     </div>
     <!--  创建 展示 -->
@@ -129,18 +187,52 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
-import { paymentApi } from "../../api/index.js";
+import { paymentApi, ticketingApi } from "../../api/index.js";
 import { cryptoUtil } from "../../utils/utils.js";
 import Pagination from "../../components/pagination/pagination.vue";
+import { useStorage } from "../../store/storage.js";
 
 const route = useRoute();
+const storage = useStorage();
 const loading = ref(false);
 
 const queryForm = ref({
-  outTradeNo: "",
-  userPhone: "",
-  userIdCard: "",
+  outTradeNo: "", // 订单号
+  userPhone: "", // 手机号
+  userIdCard: "", // 身份证号
+  startDate: "", // 开始时间
+  endDate: "", // 结束时间
+  ticketType: "", // 票种
+  orderStatus: "", // 订单状态
 });
+
+let dateRange = ref([]); //日期范围
+
+//订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
+let orderOptions = ref([
+  {
+    label: "待付款",
+    value: "1",
+  },
+  {
+    label: "待核销",
+    value: "2",
+  },
+  {
+    label: "待退款",
+    value: "3",
+  },
+  {
+    label: "已完成",
+    value: "4",
+  },
+  {
+    label: "已退款",
+    value: "5",
+  },
+]);
+
+let titleOptions = ref([]);
 
 // 分页参数
 const pagination = ref({
@@ -157,6 +249,7 @@ const paySuccess = ref(false);
 // 支付完成后跳转处理
 onMounted(() => {
   getOrderList();
+  getTicketList();
   // 从 URL 获取订单号
   const orderNo = route.query.out_trade_no;
   if (orderNo) {
@@ -170,26 +263,16 @@ onMounted(() => {
   }
 });
 
-// 查询订单
-const handleQuery = async () => {
-  if (
-    !queryForm.value.outTradeNo &&
-    !queryForm.value.userPhone &&
-    !queryForm.value.userIdCard
-  ) {
-    ElMessage.error("请输入查询条件");
-    return;
-  }
-  queryForm.value.userPhone = cryptoUtil.encrypt(queryForm.value.userPhone);
-  queryForm.value.userIdCard = cryptoUtil.encrypt(queryForm.value.userIdCard);
-  // TODO: 调用接口查询订单列表
-  console.log("查询订单:", queryForm.value);
-};
-
 // 获取订单列表
 const getOrderList = async () => {
   // TODO: 调用接口获取订单列表
   loading.value = true;
+
+  if (dateRange.value.length > 0) {
+    queryForm.value.startDate = dateRange.value[0];
+    queryForm.value.endDate = dateRange.value[1];
+  }
+
   let res = await paymentApi.getOrderList({
     ...pagination.value,
     ...queryForm.value,
@@ -208,9 +291,58 @@ const getOrderList = async () => {
   console.log("获取订单列表:", tableData.value);
 };
 
+// 获取票列表
+const getTicketList = async () => {
+  let res = await ticketingApi.ticketList({});
+  console.log(res);
+  res.data.list.map((item) =>
+    titleOptions.value.push({
+      label: item.title,
+      value: item.id,
+    })
+  );
+};
+
+// 查询订单
+const handleQuery = async () => {
+  if (
+    !queryForm.value.outTradeNo &&
+    !queryForm.value.userPhone &&
+    !queryForm.value.userIdCard &&
+    !dateRange.value.length > 0
+  ) {
+    ElMessage.error("请输入查询条件");
+    return;
+  }
+  // queryForm.value.userPhone = cryptoUtil.encrypt(queryForm.value.userPhone);
+  // queryForm.value.userIdCard = cryptoUtil.encrypt(queryForm.value.userIdCard);
+  // TODO: 调用接口查询订单列表
+  console.log("查询订单:", queryForm.value);
+  getOrderList();
+};
+
 // 重置
 const handleReset = () => {
-  queryForm.value.outTradeNo = "";
+  queryForm.value.outTradeNo = ""; // 重置订单号
+  queryForm.value.userPhone = "";
+  queryForm.value.userIdCard = "";
+  queryForm.value.dateRange = []; // 重置日期范围
+  getOrderList();
+};
+
+// 导出订单Excel
+const handleExportExcel = async () => {
+  // 调用api导出订单列表（设置 responseType: 'blob' 接收二进制文件）
+  const res = await paymentApi.exportOrder(
+    {
+      ...queryForm.value,
+    },
+    {
+      responseType: "blob",
+    }
+  );
+
+  console.log("下载", res);
 };
 
 // 分页管理
@@ -258,8 +390,11 @@ const getVerifyStatusText = (status) => {
 // 用户退款
 const handleRefund = async (row) => {
   console.log("退款", row);
+  let id = storage.comUserInfo.id || "";
+
   let res = await paymentApi.refund({
     orderNumber: row.orderNumber,
+    adminId: id,
   });
   if (res.code === 200) {
     ElMessage.success("退款成功");
@@ -270,4 +405,19 @@ const handleRefund = async (row) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-content {
+  display: flex;
+  align-items: flex-start;
+}
+
+.form-box {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.export-btn {
+  margin-right: 10px;
+}
+</style>
