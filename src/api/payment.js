@@ -6,7 +6,7 @@
  * @最后编辑者: sueRimn
  * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
  */
-import { request } from "../utils/request.js";
+import { request, downloadFile } from "../utils/request.js";
 
 
 // 获取订单号
@@ -58,10 +58,12 @@ export const refundList = (params) => {
 }
 
 // 导出订单EXCEL
-export const exportOrder = (params) => {
-    return request({
+export const exportOrder = (params, fileName) => {
+    console.log("params", params)
+    console.log("fileName", fileName)
+    return downloadFile({
         url: "/alipay/exportOrder",
         method: "post",
         data: params,
-    })
+    }, fileName)
 }
