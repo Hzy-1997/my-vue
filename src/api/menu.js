@@ -16,7 +16,8 @@
  */
 
 
-import request from "../utils/request.js"
+
+import { request } from "../utils/request.js";
 
 // 操作菜单
 /**
