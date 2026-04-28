@@ -216,7 +216,6 @@ function downloadFile(options, fileName = "") {
 
     // 自动判断请求方法
     if (!options.method) {
-        // 如果有data属性，使用POST；否则使用GET
         options.method = options.data ? "post" : "get";
     }
 
@@ -252,6 +251,7 @@ function downloadFile(options, fileName = "") {
                 // 确定文件名
                 let downloadFileName = fileName;
 
+                console.log("downloadFileName", downloadFileName)
                 // 使用 file-saver 保存文件
                 saveAs(blob, downloadFileName);
 

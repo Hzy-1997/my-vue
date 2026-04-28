@@ -23,7 +23,9 @@
     <div class="query-form">
       <div class="form-box">
         <div class="form-content">
-          <div class="title" style="width: 70px; margin-right: 5px">票务订单</div>
+          <div class="title" style="width: 70px; margin-right: 5px">
+            票务订单
+          </div>
           <div class="query-item">
             <el-input
               style="width: 200px"
@@ -88,7 +90,18 @@
           </div>
         </div>
         <div class="export-btn">
-          <el-button type="primary" @click="handleExportExcel">导出Excel</el-button>
+          <el-select
+            v-model="exportFormat"
+            style="width: 120px; margin-right: 10px"
+          >
+            <el-option label="Excel" value="xlsx" />
+            <el-option label="CSV" value="csv" />
+            <el-option label="JSON" value="json" />
+            <el-option label="PDF" value="pdf" />
+          </el-select>
+          <el-button type="primary" @click="handleExportExcel"
+            >导出{{ exportFormat.toUpperCase() }}</el-button
+          >
         </div>
       </div>
     </div>
@@ -110,14 +123,26 @@
           width="280"
           align="center"
         ></el-table-column>
-        <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
+        <el-table-column
+          prop="userName"
+          label="用户名"
+          align="center"
+        ></el-table-column>
         <!-- <el-table-column prop="type" label="图片" align="center">
         <template #default="scope">
           <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
         </template>
       </el-table-column> -->
-        <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
-        <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
+        <el-table-column
+          prop="title"
+          label="票务名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="userPhone"
+          label="手机号"
+          align="center"
+        ></el-table-column>
         <el-table-column
           prop="userIdCard"
           width="200"
@@ -134,7 +159,11 @@
           label="票务单价"
           align="center"
         ></el-table-column>
-        <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
+        <el-table-column
+          prop="buyNum"
+          label="购买数量"
+          align="center"
+        ></el-table-column>
         <el-table-column
           prop="orderAmount"
           label="付款金额"
@@ -207,6 +236,9 @@ const queryForm = ref({
 });
 
 let dateRange = ref([]); //日期范围
+
+// 导出格式
+const exportFormat = ref("xlsx"); // 默认导出Excel格式
 
 //订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
 let orderOptions = ref([
@@ -299,7 +331,7 @@ const getTicketList = async () => {
     titleOptions.value.push({
       label: item.title,
       value: item.id,
-    })
+    }),
   );
 };
 
@@ -336,10 +368,9 @@ const handleExportExcel = async () => {
   const res = await paymentApi.exportOrder(
     {
       ...queryForm.value,
+      format: exportFormat.value, // 传递导出格式
     },
-    {
-      responseType: "blob",
-    }
+    `订单列表.${exportFormat.value}`,
   );
 
   console.log("下载", res);
