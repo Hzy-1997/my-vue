@@ -23,9 +23,7 @@
     <div class="query-form">
       <div class="form-box">
         <div class="form-content">
-          <div class="title" style="width: 70px; margin-right: 5px">
-            票务订单
-          </div>
+          <div class="title" style="width: 70px; margin-right: 5px">票务订单</div>
           <div class="query-item">
             <el-input
               style="width: 200px"
@@ -90,7 +88,7 @@
           </div>
         </div>
         <div class="export-btn">
-          <el-select
+          <!-- <el-select
             v-model="exportFormat"
             style="width: 120px; margin-right: 10px"
           >
@@ -98,7 +96,7 @@
             <el-option label="CSV" value="csv" />
             <el-option label="JSON" value="json" />
             <el-option label="PDF" value="pdf" />
-          </el-select>
+          </el-select> -->
           <el-button type="primary" @click="handleExportExcel"
             >导出{{ exportFormat.toUpperCase() }}</el-button
           >
@@ -123,26 +121,14 @@
           width="280"
           align="center"
         ></el-table-column>
-        <el-table-column
-          prop="userName"
-          label="用户名"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
         <!-- <el-table-column prop="type" label="图片" align="center">
         <template #default="scope">
           <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
         </template>
       </el-table-column> -->
-        <el-table-column
-          prop="title"
-          label="票务名称"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="userPhone"
-          label="手机号"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
+        <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
         <el-table-column
           prop="userIdCard"
           width="200"
@@ -159,11 +145,7 @@
           label="票务单价"
           align="center"
         ></el-table-column>
-        <el-table-column
-          prop="buyNum"
-          label="购买数量"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
         <el-table-column
           prop="orderAmount"
           label="付款金额"
@@ -215,7 +197,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { paymentApi, ticketingApi } from "../../api/index.js";
 import { cryptoUtil } from "../../utils/utils.js";
 import Pagination from "../../components/pagination/pagination.vue";
@@ -331,7 +313,7 @@ const getTicketList = async () => {
     titleOptions.value.push({
       label: item.title,
       value: item.id,
-    }),
+    })
   );
 };
 
@@ -355,10 +337,13 @@ const handleQuery = async () => {
 
 // 重置
 const handleReset = () => {
+  console.log("重置");
   queryForm.value.outTradeNo = ""; // 重置订单号
   queryForm.value.userPhone = "";
   queryForm.value.userIdCard = "";
-  queryForm.value.dateRange = []; // 重置日期范围
+  queryForm.value.startDate = ""; // 开始时间
+  queryForm.value.endDate = ""; // 结束时间
+  dateRange.value = [];
   getOrderList();
 };
 
@@ -370,7 +355,7 @@ const handleExportExcel = async () => {
       ...queryForm.value,
       format: exportFormat.value, // 传递导出格式
     },
-    `订单列表.${exportFormat.value}`,
+    `订单列表.${exportFormat.value}`
   );
 
   console.log("下载", res);
@@ -378,7 +363,7 @@ const handleExportExcel = async () => {
 
 // 分页管理
 const handleSizeChange = (val) => {
-  console.log("什么东西1", val);
+  console.log("什么东西", val);
 };
 
 const handleCurrentChange = (val) => {
@@ -420,19 +405,26 @@ const getVerifyStatusText = (status) => {
 
 // 用户退款
 const handleRefund = async (row) => {
-  console.log("退款", row);
   let id = storage.comUserInfo.id || "";
 
-  let res = await paymentApi.refund({
-    orderNumber: row.orderNumber,
-    adminId: id,
-  });
-  if (res.code === 200) {
-    ElMessage.success("退款成功");
-    getOrderList();
-  } else {
-    ElMessage.error(res.msg || "退款失败");
-  }
+  ElMessageBox.confirm("确定执行当前退款?", "申请退款", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "",
+  })
+    .then(async () => {
+      let res = await paymentApi.refund({
+        orderNumber: row.orderNumber,
+        adminId: id,
+      });
+      if (res.code === 200) {
+        ElMessage.success("退款成功");
+        getOrderList();
+      } else {
+        ElMessage.error(res.msg || "退款失败");
+      }
+    })
+    .catch(() => {});
 };
 </script>
 

@@ -176,7 +176,8 @@ const ticketing = ref(null);
 const hotel = ref(null);
 let myChart = null; // 用于保存图表实例
 let myChart1 = null; // 用于保存图表实例
-let dataTimer = null; // 用于保存定时器
+let dataTimer = null; // 用于保存定时器（票务图表）
+let dataTimer1 = null; // 用于保存定时器（酒店图表）
 
 // 生成随机数据的函数
 const generateRandomData = () => {
@@ -206,7 +207,7 @@ const generateRandomData = () => {
 
 // 更新图表数据
 const updateChartData = () => {
-  if (myChart) {
+  if (myChart && !myChart.isDisposed()) {
     const newData = generateRandomData();
     myChart.setOption({
       series: [
@@ -216,7 +217,7 @@ const updateChartData = () => {
       ],
     });
   }
-  if (myChart1) {
+  if (myChart1 && !myChart1.isDisposed()) {
     const newData = generateRandomData();
     myChart1.setOption({
       series: [
@@ -349,7 +350,7 @@ onMounted(() => {
     myChart1.setOption(option1);
 
     // 设置定时器，每1分钟更新一次数据
-    dataTimer = setInterval(updateChartData, 60000);
+    dataTimer1 = setInterval(updateChartData, 60000);
 
     // 【可选】让图表跟随窗口大小变化而自适应
     window.addEventListener("resize", () => {
@@ -363,8 +364,13 @@ onUnmounted(() => {
   if (dataTimer) {
     clearInterval(dataTimer);
   }
+  if (dataTimer1) {
+    clearInterval(dataTimer1);
+  }
   if (myChart) {
     myChart.dispose();
+  }
+  if (myChart1) {
     myChart1.dispose();
   }
 });
