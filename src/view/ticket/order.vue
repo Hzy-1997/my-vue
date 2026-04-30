@@ -363,7 +363,7 @@ const handleExportExcel = async () => {
 
 // 分页管理
 const handleSizeChange = (val) => {
-  console.log("什么东西", val);
+  console.log("分页管理大小改变", val);
 };
 
 const handleCurrentChange = (val) => {
