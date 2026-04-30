@@ -23,9 +23,7 @@
     <div class="query-form">
       <div class="form-box">
         <div class="form-content">
-          <div class="title" style="width: 70px; margin-right: 5px">
-            票务订单
-          </div>
+          <div class="title" style="width: 70px; margin-right: 5px">票务订单</div>
           <div class="query-item">
             <el-input
               style="width: 200px"
@@ -90,10 +88,7 @@
           </div>
         </div>
         <div class="export-btn">
-          <el-select
-            v-model="exportFormat"
-            style="width: 120px; margin-right: 10px"
-          >
+          <el-select v-model="exportFormat" style="width: 120px; margin-right: 10px">
             <el-option label="Excel" value="xlsx" />
             <el-option label="CSV" value="csv" />
             <el-option label="JSON" value="json" />
@@ -123,26 +118,14 @@
           width="280"
           align="center"
         ></el-table-column>
-        <el-table-column
-          prop="userName"
-          label="用户名"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="userName" label="用户名" align="center"></el-table-column>
         <!-- <el-table-column prop="type" label="图片" align="center">
         <template #default="scope">
           <el-image :src="imgUrl + scope.row.cover" style="width: 50px; height: 50px" />
         </template>
       </el-table-column> -->
-        <el-table-column
-          prop="title"
-          label="票务名称"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="userPhone"
-          label="手机号"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="title" label="票务名称" align="center"></el-table-column>
+        <el-table-column prop="userPhone" label="手机号" align="center"></el-table-column>
         <el-table-column
           prop="userIdCard"
           width="200"
@@ -159,11 +142,7 @@
           label="票务单价"
           align="center"
         ></el-table-column>
-        <el-table-column
-          prop="buyNum"
-          label="购买数量"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="buyNum" label="购买数量" align="center"></el-table-column>
         <el-table-column
           prop="orderAmount"
           label="付款金额"
@@ -331,7 +310,7 @@ const getTicketList = async () => {
     titleOptions.value.push({
       label: item.title,
       value: item.id,
-    }),
+    })
   );
 };
 
@@ -370,7 +349,7 @@ const handleExportExcel = async () => {
       ...queryForm.value,
       format: exportFormat.value, // 传递导出格式
     },
-    `订单列表.${exportFormat.value}`,
+    `订单列表.${exportFormat.value}`
   );
 
   console.log("下载", res);
@@ -378,7 +357,7 @@ const handleExportExcel = async () => {
 
 // 分页管理
 const handleSizeChange = (val) => {
-  console.log("什么东西1", val);
+  console.log("分页管理大小改变", val);
 };
 
 const handleCurrentChange = (val) => {
