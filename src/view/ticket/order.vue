@@ -88,12 +88,15 @@
           </div>
         </div>
         <div class="export-btn">
-          <el-select v-model="exportFormat" style="width: 120px; margin-right: 10px">
+          <!-- <el-select
+            v-model="exportFormat"
+            style="width: 120px; margin-right: 10px"
+          >
             <el-option label="Excel" value="xlsx" />
             <el-option label="CSV" value="csv" />
             <el-option label="JSON" value="json" />
             <el-option label="PDF" value="pdf" />
-          </el-select>
+          </el-select> -->
           <el-button type="primary" @click="handleExportExcel"
             >导出{{ exportFormat.toUpperCase() }}</el-button
           >
@@ -194,7 +197,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { paymentApi, ticketingApi } from "../../api/index.js";
 import { cryptoUtil } from "../../utils/utils.js";
 import Pagination from "../../components/pagination/pagination.vue";
@@ -334,10 +337,13 @@ const handleQuery = async () => {
 
 // 重置
 const handleReset = () => {
+  console.log("重置");
   queryForm.value.outTradeNo = ""; // 重置订单号
   queryForm.value.userPhone = "";
   queryForm.value.userIdCard = "";
-  queryForm.value.dateRange = []; // 重置日期范围
+  queryForm.value.startDate = ""; // 开始时间
+  queryForm.value.endDate = ""; // 结束时间
+  dateRange.value = [];
   getOrderList();
 };
 
@@ -399,19 +405,26 @@ const getVerifyStatusText = (status) => {
 
 // 用户退款
 const handleRefund = async (row) => {
-  console.log("退款", row);
   let id = storage.comUserInfo.id || "";
 
-  let res = await paymentApi.refund({
-    orderNumber: row.orderNumber,
-    adminId: id,
-  });
-  if (res.code === 200) {
-    ElMessage.success("退款成功");
-    getOrderList();
-  } else {
-    ElMessage.error(res.msg || "退款失败");
-  }
+  ElMessageBox.confirm("确定执行当前退款?", "申请退款", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "",
+  })
+    .then(async () => {
+      let res = await paymentApi.refund({
+        orderNumber: row.orderNumber,
+        adminId: id,
+      });
+      if (res.code === 200) {
+        ElMessage.success("退款成功");
+        getOrderList();
+      } else {
+        ElMessage.error(res.msg || "退款失败");
+      }
+    })
+    .catch(() => {});
 };
 </script>
 
