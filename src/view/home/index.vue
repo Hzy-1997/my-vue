@@ -1,7 +1,7 @@
 <template>
   <div class="basic-layout">
     <!-- 左侧导航栏 -->
-    <div class="nav-side">
+    <div class="nav-side scroll">
       <div class="logo">
         <span>@#￥</span>
         <span>系统操作</span>

@@ -37,6 +37,7 @@
       <el-table :data="roomTypeList" height="calc(100vh - 255px)" style="width: 100%">
         <el-table-column fixed prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="套房名称" align="center" />
+        <el-table-column prop="hotel.title" label="酒店名称" align="center" />
         <el-table-column prop="images" label="套房图片" align="center">
           <template #default="scope">
             <el-image
@@ -223,7 +224,8 @@ import RichTextEditor from "../../components/editor/index.vue";
 import { hotelApi, commonApi } from "../../api/index.js";
 import Pagination from "../../components/pagination/pagination.vue";
 
-const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com";
+// const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片前缀
+const imgUrl = import.meta.env.VITE_IMG_URL;
 
 const roomTypeList = ref([]);
 
@@ -261,7 +263,7 @@ const InitformData = () => ({
   image: "",
   banner: "",
   status: 1,
-  hotelId: 1,
+  hotelId: "",
 });
 
 // 表单数据
@@ -342,7 +344,11 @@ const getHotelList = async () => {
 
 // 获取酒店房型列表
 const getRoomTypeList = async () => {
-  const res = await hotelApi.getRoomTypeList(pagination);
+  let data = {
+    ...pagination.value,
+    ...queryForm.value,
+  };
+  const res = await hotelApi.getRoomTypeList(data);
 
   roomTypeList.value = res.data.list;
   pagination.value.total = res.data.count;
@@ -362,6 +368,7 @@ const handleCurrentChange = (val) => {
 // 查询
 const handleQuery = () => {
   console.log(queryForm.value);
+  getRoomTypeList();
 };
 
 // 重置

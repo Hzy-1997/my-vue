@@ -137,7 +137,7 @@ editorConfig.MENU_CONF = {
   ...editorConfig.MENU_CONF,
   uploadImage: {
     ...props.uploadImageConfig, // 传入父组件传入的配置
-    timeout: 5 * 1000, // 限制上传超时时间为 5 秒
+    timeout: 10 * 1000, // 限制上传超时时间为 10 秒
   },
 };
 

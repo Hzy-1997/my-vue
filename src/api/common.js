@@ -5,7 +5,7 @@ import { request } from "../utils/request.js";
 // 图片上传
 export const uploadImg = (data) => {
     return request({
-        url: "/ticket/uploadImg",
+        url: "/public/uploadImg",
         method: "post",
         data,
     })
@@ -15,7 +15,7 @@ export const uploadImg = (data) => {
 // 图片删除
 export const deleteImg = (data) => {
     return request({
-        url: "/ticket/deleteImg",
+        url: "/public/deleteImg",
         method: "post",
         data,
     })

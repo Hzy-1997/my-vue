@@ -6,7 +6,7 @@
  * @最后编辑者: sueRimn
  * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
  */
-import { request } from "../utils/request.js";
+import { request, downloadFile } from "../utils/request.js";
 
 // 酒店操作接口
 export const hotelOperation = (data) => {
@@ -97,4 +97,31 @@ export const changeDatePrice = (data) => {
         method: 'post',
         data
     })
+}
+
+// 预定房间
+export const bookRoom = (data) => {
+    return request({
+        url: '/hotel/hotelRoomBook',
+        method: 'post',
+        data
+    })
+}
+
+// 获取订单列表
+export const getHotelOrderList = (data) => {
+    return request({
+        url: '/hotel/hotelOrderList',
+        method: 'get',
+        data
+    })
+}
+
+// 导出订单列表
+export const exportHotelOrderList = (data, fileName) => {
+    return downloadFile({
+        url: "/hotel/exportHotelOrderList",
+        method: "post",
+        data: data,
+    }, fileName)
 }

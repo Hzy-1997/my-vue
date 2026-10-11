@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import { ref } from "vue";
 import icons from "./requireIcons";
 
 const emit = defineEmits(["selected"]);
@@ -51,7 +51,7 @@ let filterIcons = () => {
   }
 };
 
-// console.log("iconList", iconList.value);
+console.log("iconList", iconList.value);
 
 let selectedIcon = (name) => {
   emit("selected", name);

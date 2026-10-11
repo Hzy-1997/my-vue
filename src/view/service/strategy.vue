@@ -1,3 +1,11 @@
+<!--
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+-->
 <template>
   <div>
     <!-- 头部搜索 -->
@@ -23,8 +31,8 @@
 
       <!-- 表格展示 -->
       <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
-        <el-table-column prop="id" label="id" width="50"></el-table-column>
-        <el-table-column prop="title" label="攻略名称"></el-table-column>
+        <el-table-column prop="id" label="id" width="50" align="center"></el-table-column>
+        <el-table-column prop="title" label="攻略名称" align="center"></el-table-column>
         <el-table-column prop="type" label="图片" align="center">
           <template #default="scope">
             <el-image
@@ -33,20 +41,32 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="createBy" label="创建人"></el-table-column>
-        <el-table-column prop="time" label="创建时间"></el-table-column>
-        <el-table-column prop="" label="操作">
+        <el-table-column prop="createBy" label="创建人" align="center"></el-table-column>
+        <el-table-column prop="time" label="创建时间" align="center"></el-table-column>
+        <el-table-column prop="status" label="状态" align="center">
+          <template #default="{ row }">
+            <el-switch
+              v-model="row.status"
+              active-text="正常"
+              inactive-text="停用"
+              :active-value="1"
+              :inactive-value="2"
+              @change="handleTicketingStatus(row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="" label="操作" align="center">
           <template #default="scope">
             <el-button
               type="primary"
-              link
+              size="small"
               @click="handleEdit(scope.row)"
               v-has="'strategy-update'"
               >编辑</el-button
             >
             <el-button
               type="danger"
-              link
+              size="small"
               @click="handleDelete(scope.row)"
               v-has="'strategy-delete'"
               >删除</el-button
@@ -98,7 +118,7 @@
       </div>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">创建</el-button>
+        <el-button type="primary" @click="handleSubmit">确认</el-button>
       </template>
     </el-dialog>
   </div>
@@ -117,7 +137,8 @@ import { useStorage } from "../../store/storage.js";
 const queryForm = ref({
   title: "",
 });
-const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
+// const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
+const imgUrl = import.meta.env.VITE_IMG_URL;
 
 const tableData = ref([]);
 // 表单实例
@@ -166,8 +187,8 @@ const getStrategyList = async () => {
     });
     console.log("获取攻略数据", res);
     if (res.code === 200) {
-      tableData.value = res.data.rows;
-      pagination.value.total = res.data.count;
+      tableData.value = res.data.list;
+      pagination.value.total = res.data.total;
     }
   } catch (error) {
     console.log(error);
@@ -261,6 +282,31 @@ const handleSubmit = async () => {
       type: "error",
     });
   }
+};
+
+// 状态切换
+const handleTicketingStatus = (row) => {
+  ElMessageBox.confirm("确定要修改状态吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      let res = await projectApi.strategyOperate({
+        id: row.id,
+        status: row.status,
+        action: "update",
+      });
+      if (res.code === 200) {
+        ElMessage.success("修改成功");
+        getStrategyList();
+      } else {
+        ElMessage.error(res.message || "修改失败");
+      }
+    })
+    .catch(() => {
+      row.status = row.status === 1 ? 2 : 1;
+    });
 };
 
 // 编辑

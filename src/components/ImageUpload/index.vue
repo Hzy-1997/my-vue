@@ -70,7 +70,7 @@ const maxSizeInBytes = computed(() => props.maxFileSize * 1024 * 1024);
 // 阿里云OSS基础URL
 const ossBaseUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com";
 // 上传接口地址
-const imageUrl = ref(config.baseApi + "/ticket/uploadImg");
+const imageUrl = ref(config.baseApi + "/public/uploadImg");
 
 // 响应式数据
 const fileList = ref([]);

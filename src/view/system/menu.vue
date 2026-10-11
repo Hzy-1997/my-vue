@@ -1,5 +1,5 @@
 <!--
- * @描述: 
+ * @描述:  以后可能会用到 这里有一个问题就是 记得在main.js中引入svg-icon组件库 缺少 vite-plugin-svg-icons 的配置和 virtual:svg-icons-register 的引入
  * @版本: 
  * @作者: 
  * @日期: ${year}-${month}-${day}
@@ -97,14 +97,14 @@
           align="center"
         >
           <template #default="scope">
-            <span v-if="scope.row.menuLevel != 3">
+            <span v-if="scope.row.menuLevel != 3" style="margin-right: 13px">
               <el-button type="primary" size="small" @click="handleAdd(scope.row)"
                 >新增</el-button
               ></span
             >
-            <el-button type="" size="small" @click="handleEdit(scope.row)"
-              >编辑</el-button
-            >
+
+            <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
+
             <el-button type="danger" size="small" @click="handleDelete(scope.row)"
               >删除</el-button
             >
@@ -114,7 +114,7 @@
     </div>
     <!-- 创建菜单 -->
     <el-dialog
-      title="菜单管理"
+      title="菜单配置"
       v-model="dialogVisible"
       label-width="90px"
       :show-close="false"
@@ -240,7 +240,7 @@ let dialogVisible = ref(false);
 
 let ruleFormRef = ref(null);
 
-let menuForm = ref({
+let form = () => ({
   action: "create",
   menuName: "",
   menuLevel: 1,
@@ -254,6 +254,8 @@ let menuForm = ref({
   sort: 1,
   parentId: "",
 });
+
+let menuForm = ref(form());
 
 let content =
   "权限标识用于控制按钮级别的权限访问(如下拉框、按钮等),请以菜单路由横线开头,如菜单路由为:menu,则权限标识为:menu-create,menu-delete,menu-update)";
@@ -314,12 +316,10 @@ let handleMenuList = async () => {
 };
 
 // 新增
-let handleCreate = () => {
+let handleCreate = async () => {
   dialogVisible.value = true;
-  nextTick(() => {
-    ruleFormRef.value.resetFields();
-  });
-  menuForm.value.action = "create";
+  await nextTick();
+  menuForm.value = form(); // 重置表单
 };
 
 let handleMenu = (value) => {
@@ -375,26 +375,25 @@ let handleSubmit = () => {
 };
 
 // 新增
-let handleAdd = () => {
+let handleAdd = async () => {
   console.log("新增");
   dialogVisible.value = true;
-  nextTick(() => {
-    ruleFormRef.value.resetFields();
-  });
+  await nextTick();
+  // ruleFormRef.value.resetFields();
+  menuForm.value = form(); // 重置表单
   menuForm.value.action = "create";
   menuForm.value.menuLevel = 2;
 };
 
 // 编辑
-let handleEdit = (row) => {
+let handleEdit = async (row) => {
   console.log(row);
   dialogVisible.value = true;
-  nextTick(() => {
-    menuForm.value = {
-      ...row,
-    };
-    menuForm.value.action = "update";
-  });
+  await nextTick();
+  menuForm.value = {
+    ...row,
+  };
+  menuForm.value.action = "update";
 };
 
 // 删除

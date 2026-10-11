@@ -126,7 +126,12 @@
             <el-input v-model="formData.address" placeholder="请输入酒店地址" />
           </el-form-item>
           <el-form-item label="酒店简介" prop="intro">
-            <el-input v-model="formData.intro" placeholder="请输入酒店简介" />
+            <el-input
+              type="textarea"
+              rows="4"
+              v-model="formData.intro"
+              placeholder="请输入酒店简介"
+            />
           </el-form-item>
           <el-form-item label="经纬度" prop="location">
             <el-input v-model="formData.location" placeholder="请输入经纬度" />
@@ -234,7 +239,8 @@ import RichTextEditor from "../../components/editor/index.vue";
 import IconFont from "../../components/IconFont/index.vue";
 import Pagination from "../../components/pagination/pagination.vue";
 
-const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com";
+// const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com";
+const imgUrl = import.meta.env.VITE_IMG_URL;
 
 const dialogVisible = ref(false);
 const facilityDialogVisible = ref(false);

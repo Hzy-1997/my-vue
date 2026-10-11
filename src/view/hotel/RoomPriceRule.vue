@@ -77,7 +77,7 @@
         >
           <template #default="scope">
             <el-button
-              type="primary"
+              type="success"
               size="small"
               @click="handleConfigPrice(scope.row)"
               v-has="'RoomPriceRule-config'"
@@ -358,7 +358,10 @@ onMounted(() => {
 
 //获取房型列表
 const getRoomTypeList = async () => {
-  let res = await hotelApi.getRoomTypeList();
+  let res = await hotelApi.getRoomTypeList({
+    page: 1,
+    pageSize: 1000,
+  });
   if (res.code === 200) {
     roomTypeList.value = res.data.list;
   }
@@ -586,8 +589,27 @@ const ruleSubmit = async () => {
 };
 
 // 删除
-const handleDelete = (row) => {
-  console.log("数据", row);
+const handleDelete = async (row) => {
+  ElMessageBox.confirm("确定删除该日期规则吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      console.log("数据", row);
+      let data = {
+        id: row.id,
+        action: "delete",
+      };
+      console.log(data);
+      let res = await hotelApi.packageOperation(data);
+      console.log(res);
+      if (res.code == 200) {
+        ElMessage.success(res.message);
+        getList();
+      }
+    })
+    .catch(() => {});
 };
 </script>
 

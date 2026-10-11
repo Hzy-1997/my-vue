@@ -6,6 +6,22 @@
  * @最后编辑者: sueRimn
  * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
  */
+/*
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+ */
+/*
+ * @描述: 
+ * @版本: 
+ * @作者: 
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+ */
 import { request, downloadFile } from "../utils/request.js";
 
 
@@ -20,10 +36,10 @@ export const getOrderNo = (params) => {
 
 
 
-// 支付
+// 支付（已迁移到 /public 前缀，所有业务共用）
 export const payment = (params) => {
     return request({
-        url: "/alipay/payment",
+        url: "/public/payment",
         method: "post",
         data: params
     })
@@ -39,10 +55,10 @@ export const getOrderList = (params) => {
 }
 
 
-// 退款
+// 退款（已迁移到 /public 前缀，统一处理票务/套餐/酒店等所有业务退款）
 export const refund = (params) => {
     return request({
-        url: "/alipay/refund",
+        url: "/public/refund",
         method: "post",
         data: params
     })
@@ -59,8 +75,6 @@ export const refundList = (params) => {
 
 // 导出订单EXCEL
 export const exportOrder = (params, fileName) => {
-    console.log("params", params)
-    console.log("fileName", fileName)
     return downloadFile({
         url: "/alipay/exportOrder",
         method: "post",

@@ -91,7 +91,7 @@
           width="180"
           align="center"
         ></el-table-column>
-        <el-table-column prop="" label="操作" fixed="right" width="200" align="center">
+        <el-table-column prop="" label="操作" fixed="right" width="260" align="center">
           <template #default="scope">
             <el-button
               type="primary"
@@ -100,13 +100,12 @@
               v-has="'ticketList-update'"
               >编辑</el-button
             >
-            <!-- <el-button
-              type="primary"
-              link
-              @click="handleSetPrice(scope.row)"
-              v-has="'ticketList-setScene'"
+            <el-button type="primary" link @click="handleSetPrice(scope.row)"
               >价格配置</el-button
-            > -->
+            >
+            <el-button type="success" link @click="handleCalendar(scope.row)"
+              >日历预览</el-button
+            >
             <el-button
               type="danger"
               link
@@ -118,7 +117,7 @@
         </el-table-column>
       </el-table>
     </div>
-
+    <!-- 分页 -->
     <Pagination
       :pagination="pagination"
       @handleSizeChange="handleSizeChange"
@@ -366,59 +365,152 @@
       </template>
     </el-dialog>
 
-    <!-- 票务规则创建 -->
+    <!-- 票务价格规则管理 -->
     <el-dialog
-      title="票务规则创建"
+      :title="`价格规则配置 - ${currentTicket.title || ''}`"
       v-model="rouleDialogVisible"
-      width="60%"
-      :show-close="false"
+      width="70%"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
+      destroy-on-close
     >
       <div class="form-box">
-        <el-form label-width="100px">
-          <el-form-item label="票务售卖日期" style="width: 500px" align-items="center">
-            <el-date-picker
-              v-model="timeValue"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始售卖日期"
-              end-placeholder="结束售卖日期"
-              style="width: 100%"
-            />
-          </el-form-item>
-          <el-form-item label="工作日规则" prop="price" align-items="center">
-            <el-radio-group v-model="ruleForm.ruleConfig.weekday.priceType">
-              <el-radio :value="1" size="large">固定价格</el-radio>
-              <el-radio :value="2" size="large">百分比上涨</el-radio>
-              <el-radio :value="3" size="large">百分比下降</el-radio>
-            </el-radio-group>
-            <el-input v-model="ruleForm.ruleConfig.weekday.priceValue"></el-input>
-          </el-form-item>
-          <el-form-item label="休息日规则" prop="price">
-            <el-radio-group v-model="ruleForm.ruleConfig.weekend.priceType">
-              <el-radio :value="1" size="large">固定价格</el-radio>
-              <el-radio :value="2" size="large">百分比上涨</el-radio>
-              <el-radio :value="3" size="large">百分比下降</el-radio>
-            </el-radio-group>
-            <el-input v-model="ruleForm.ruleConfig.weekend.priceValue"></el-input>
-          </el-form-item>
-          <el-form-item label="节假日规则" prop="price">
-            <el-radio-group v-model="ruleForm.ruleConfig.holiday.priceType">
-              <el-radio :value="1" size="large">固定价格</el-radio>
-              <el-radio :value="2" size="large">百分比上涨</el-radio>
-              <el-radio :value="3" size="large">百分比下降</el-radio>
-            </el-radio-group>
-            <el-input v-model="ruleForm.ruleConfig.holiday.priceValue"></el-input>
-          </el-form-item>
-        </el-form>
+        <div class="rule-header">
+          <span>票务原价：¥{{ currentTicket.price }}</span>
+          <el-button
+            v-if="!ruleFormVisible"
+            type="primary"
+            size="small"
+            @click="handleRuleCreate"
+            >新增规则</el-button
+          >
+        </div>
+
+        <el-table :data="currentRules" size="small" border>
+          <el-table-column prop="id" label="ID" width="60" align="center" />
+          <el-table-column label="售卖日期范围" width="210" align="center">
+            <template #default="{ row }">
+              {{ row.startDate }} ~ {{ row.endDate || "长期" }}
+            </template>
+          </el-table-column>
+          <el-table-column label="工作日规则" align="center">
+            <template #default="{ row }">
+              {{ ruleText(row.ruleConfig?.weekday) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="周末规则" align="center">
+            <template #default="{ row }">
+              {{ ruleText(row.ruleConfig?.weekend) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="节假日规则" align="center">
+            <template #default="{ row }">
+              {{ ruleText(row.ruleConfig?.holiday) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="stock" label="库存" width="80" align="center" />
+          <el-table-column label="操作" width="130" align="center">
+            <template #default="{ row }">
+              <el-button type="primary" link size="small" @click="handleRuleEdit(row)"
+                >编辑</el-button
+              >
+              <el-button type="danger" link size="small" @click="handleRuleDelete(row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 新增/编辑表单 -->
+        <div v-if="ruleFormVisible" class="rule-form">
+          <el-divider content-position="left">
+            {{ ruleForm.action === "create" ? "新增价格规则" : "编辑价格规则" }}
+          </el-divider>
+          <el-form label-width="110px">
+            <el-form-item label="票务售卖日期">
+              <el-date-picker
+                v-model="timeValue"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始售卖日期"
+                end-placeholder="结束售卖日期"
+                value-format="YYYY-MM-DD"
+                style="width: 400px"
+              />
+            </el-form-item>
+            <el-form-item label="工作日规则">
+              <el-radio-group v-model="ruleForm.ruleConfig.weekday.priceType">
+                <el-radio :value="1" size="large">固定价格</el-radio>
+                <el-radio :value="2" size="large">百分比上涨</el-radio>
+                <el-radio :value="3" size="large">百分比下降</el-radio>
+              </el-radio-group>
+              <el-input
+                v-model="ruleForm.ruleConfig.weekday.priceValue"
+                :placeholder="pricePlaceholder(ruleForm.ruleConfig.weekday.priceType)"
+                style="width: 160px; margin-left: 12px"
+              />
+            </el-form-item>
+            <el-form-item label="周末规则">
+              <el-radio-group v-model="ruleForm.ruleConfig.weekend.priceType">
+                <el-radio :value="1" size="large">固定价格</el-radio>
+                <el-radio :value="2" size="large">百分比上涨</el-radio>
+                <el-radio :value="3" size="large">百分比下降</el-radio>
+              </el-radio-group>
+              <el-input
+                v-model="ruleForm.ruleConfig.weekend.priceValue"
+                :placeholder="pricePlaceholder(ruleForm.ruleConfig.weekend.priceType)"
+                style="width: 160px; margin-left: 12px"
+              />
+            </el-form-item>
+            <el-form-item label="节假日规则">
+              <el-radio-group v-model="ruleForm.ruleConfig.holiday.priceType">
+                <el-radio :value="1" size="large">固定价格</el-radio>
+                <el-radio :value="2" size="large">百分比上涨</el-radio>
+                <el-radio :value="3" size="large">百分比下降</el-radio>
+              </el-radio-group>
+              <el-input
+                v-model="ruleForm.ruleConfig.holiday.priceValue"
+                :placeholder="pricePlaceholder(ruleForm.ruleConfig.holiday.priceType)"
+                style="width: 160px; margin-left: 12px"
+              />
+            </el-form-item>
+            <el-form-item label="规则库存">
+              <el-input-number
+                v-model="ruleForm.stock"
+                :min="0"
+                placeholder="0表示不限"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="ruleFormVisible = false">取消</el-button>
+              <el-button type="primary" @click="uploadRules">保存规则</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="rouleDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="uploadRules">确定</el-button>
+          <el-button @click="rouleDialogVisible = false">关闭</el-button>
         </span>
       </template>
+    </el-dialog>
+
+    <!-- 日历价格预览 -->
+    <el-dialog
+      :title="`日期价格预览 - ${currentTicket.title || ''}`"
+      v-model="calendarVisible"
+      width="70%"
+    >
+      <el-calendar v-model="calendarDate">
+        <template #date-cell="{ data }">
+          <div class="calendar-cell">
+            <div class="date">{{ data.day.slice(5) }}</div>
+            <div v-if="getCalendarData(data.day)" class="price-info">
+              <div class="price">¥{{ getCalendarData(data.day).price }}</div>
+              <div class="type">{{ getCalendarData(data.day).dateTypeName }}</div>
+            </div>
+          </div>
+        </template>
+      </el-calendar>
     </el-dialog>
   </div>
 </template>
@@ -431,8 +523,10 @@ import ImageUpload from "../../components/ImageUpload/index.vue"; // 组件使�
 import { ticketingApi, commonApi } from "../../api/index.js";
 import RichTextEditor from "../../components/editor/index.vue";
 import Pagination from "../../components/pagination/pagination.vue";
+import { imageEdit } from "../../utils/utils.js"; // 图片编辑
 
-const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
+// const imgUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com"; // 图片地址
+const imgUrl = import.meta.env.VITE_IMG_URL;
 
 const queryForm = ref({
   title: "",
@@ -450,6 +544,7 @@ let timeValue = ref([]);
 
 const ruleConfig = () => ({
   action: "create",
+  id: "",
   ticketId: "",
   startDate: "",
   endDate: "",
@@ -467,10 +562,20 @@ const ruleConfig = () => ({
       priceValue: "",
     },
   },
-  stock: "",
+  stock: 0,
   status: 1,
 });
 const ruleForm = ref(ruleConfig());
+
+// 价格规则管理相关状态
+let currentTicket = ref({});
+let currentRules = ref([]);
+let ruleFormVisible = ref(false);
+
+// 日历预览相关状态
+const calendarVisible = ref(false);
+const calendarDate = ref(new Date());
+let calendarPrices = ref([]);
 
 let createFormRef = ref(null);
 let dialogVisible = ref(false);
@@ -761,22 +866,6 @@ const handleInputConfirm = () => {
   }
 };
 
-// 处理图片上传
-const imageEdit = (data) => {
-  console.log(data);
-  let arr = [];
-  if (Array.isArray(data)) {
-    data.forEach((element) => {
-      if (element && element.url) {
-        console.log(element);
-        arr.push(element.url.split("aliyuncs.com")[1]);
-      }
-    });
-    return arr.join(",");
-  }
-  return data;
-};
-
 // 是否上线
 const handleTicketingStatus = (row) => {
   ElMessageBox.confirm("确定要修改账户状态吗？", "提示", {
@@ -815,23 +904,174 @@ const handleTicketingStatus = (row) => {
     });
 };
 
-// 价格配置
+// 打开价格规则配置弹窗
 const handleSetPrice = (row) => {
-  console.log(row);
-  ruleForm.value.ticketId = row.id;
-  ruleForm.value.stock = row.stock;
-
+  currentTicket.value = row;
+  currentRules.value = row.priceRules || [];
+  ruleFormVisible.value = false;
+  ruleForm.value = ruleConfig();
+  timeValue.value = [];
   rouleDialogVisible.value = true;
 };
 
-//提交价格规则
-const uploadRules = async () => {
-  ruleForm.value.startDate = dayjs(timeValue.value[0]).format("YYYY-MM-DD");
-  ruleForm.value.endDate = dayjs(timeValue.value[1]).format("YYYY-MM-DD");
-  console.log(ruleForm.value);
-  let res = await ticketingApi.operatePrice(ruleForm.value);
-  console.log("提交状态", res);
+// 刷新规则列表（保存/删除后重新拉取）
+const refreshRules = async () => {
+  await handleMenuList();
+  let ticket = ticketList.value.find((t) => t.id === currentTicket.value.id);
+  if (ticket) {
+    currentTicket.value = ticket;
+    currentRules.value = ticket.priceRules || [];
+  }
 };
+
+// 新增规则
+const handleRuleCreate = () => {
+  ruleForm.value = ruleConfig();
+  ruleForm.value.ticketId = currentTicket.value.id;
+  timeValue.value = [];
+  ruleFormVisible.value = true;
+};
+
+// 编辑规则
+const handleRuleEdit = (rule) => {
+  ruleForm.value = {
+    action: "update",
+    id: rule.id,
+    ticketId: currentTicket.value.id,
+    startDate: rule.startDate,
+    endDate: rule.endDate,
+    ruleConfig: {
+      weekday: {
+        priceType: rule.ruleConfig?.weekday?.priceType ?? 1,
+        priceValue: rule.ruleConfig?.weekday?.priceValue ?? "",
+      },
+      weekend: {
+        priceType: rule.ruleConfig?.weekend?.priceType ?? 1,
+        priceValue: rule.ruleConfig?.weekend?.priceValue ?? "",
+      },
+      holiday: {
+        priceType: rule.ruleConfig?.holiday?.priceType ?? 1,
+        priceValue: rule.ruleConfig?.holiday?.priceValue ?? "",
+      },
+    },
+    stock: rule.stock ?? 0,
+    status: rule.status ?? 1,
+  };
+  timeValue.value = rule.startDate && rule.endDate ? [rule.startDate, rule.endDate] : [];
+  ruleFormVisible.value = true;
+};
+
+// 删除规则
+const handleRuleDelete = (rule) => {
+  ElMessageBox.confirm(
+    `确定删除该价格规则（${rule.startDate} ~ ${rule.endDate || "长期"}）吗？`,
+    "提示",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }
+  )
+    .then(async () => {
+      let res = await ticketingApi.operatePrice({
+        action: "delete",
+        id: rule.id,
+      });
+      if (res.code == 200) {
+        ElMessage.success(res.message);
+        refreshRules();
+      } else {
+        ElMessage.error(res.message);
+      }
+    })
+    .catch(() => {});
+};
+
+// 规则摘要文本
+const ruleText = (config) => {
+  if (!config || config.priceValue === "" || config.priceValue == null) {
+    return "原价";
+  }
+  const v = config.priceValue;
+  if (config.priceType == 1) return `固定 ¥${v}`;
+  if (config.priceType == 2) return `上涨 ${v}%`;
+  if (config.priceType == 3) return `下降 ${v}%`;
+  return "原价";
+};
+
+// 输入框提示
+const pricePlaceholder = (type) => (type == 1 ? "固定价格(元)" : "百分比数值(%)");
+
+// 提交价格规则（新增/编辑）
+const uploadRules = async () => {
+  if (!timeValue.value || timeValue.value.length !== 2) {
+    return ElMessage.warning("请选择票务售卖日期范围");
+  }
+  // priceValue 数字化，空值保持原价语义（后端无对应规则时按原价处理）
+  const cfg = ruleForm.value.ruleConfig;
+  for (let key of ["weekday", "weekend", "holiday"]) {
+    if (cfg[key].priceValue !== "" && cfg[key].priceValue != null) {
+      cfg[key].priceValue = Number(cfg[key].priceValue);
+    }
+  }
+  ruleForm.value.startDate = timeValue.value[0];
+  ruleForm.value.endDate = timeValue.value[1];
+
+  let res = await ticketingApi.operatePrice(ruleForm.value);
+  if (res.code == 200) {
+    ElMessage.success(res.message);
+    ruleFormVisible.value = false;
+    refreshRules();
+  } else {
+    ElMessage.error(res.message);
+  }
+};
+
+// 日历价格预览
+const handleCalendar = async (row) => {
+  currentTicket.value = row;
+  let res = await ticketingApi.getTicketDatePrices({ ticketId: row.id });
+  if (res.code == 200) {
+    calendarPrices.value = res.data.datePrices || [];
+    calendarVisible.value = true;
+  } else {
+    ElMessage.error(res.message);
+  }
+};
+
+// 查找日历中某日期的数据
+const getCalendarData = (day) => calendarPrices.value.find((item) => item.date === day);
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.rule-form {
+  margin-top: 8px;
+}
+
+.calendar-cell {
+  height: 100%;
+}
+
+.calendar-cell .date {
+  font-weight: bold;
+}
+
+.calendar-cell .price {
+  color: #f56c6c;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.calendar-cell .type {
+  font-size: 12px;
+  color: #999;
+}
+</style>

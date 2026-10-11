@@ -10,6 +10,25 @@ body {
     box-sizing: border-box;
 }
 
+/* 全局滚动条样式 */
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #d3dce6;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .white {
     background-color: #ffffff;
 }
@@ -158,6 +177,25 @@ a {
 .form-box {
     max-height: 600px;
     overflow-y: auto;
+    padding-right: 20px;
+}
+
+/* 针对特定的元素设置滚动条样式 */
+.form-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-box::-webkit-scrollbar-track {
+    background: #d3dce6;
+}
+
+.form-box::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+.form-box::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 
@@ -178,4 +216,18 @@ a {
 
 .my-scrollable-div::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.scroll {
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 2px;
+    }
+
 }

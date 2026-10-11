@@ -1,3 +1,12 @@
+<!--
+ * @描述:
+ * @版本:
+ * @作者:
+ * @日期: ${year}-${month}-${day}
+ * @最后编辑者: sueRimn
+ * @最后编辑时间: ${year}-${month}-${day} ${hour}:${minute}:${second}
+-->
+
 # 侧边栏与面包屑联动修复方案
 
 ## 问题分析
@@ -5,6 +14,7 @@
 经过分析，发现侧边栏（treemenu组件）在点击面包屑导航时没有相应更新高亮状态的原因是：
 
 1. treemenu组件中的`activeIndex`只在组件初始化时设置了一次：
+
    ```javascript
    let activeIndex = location.pathname.substring(1);
    ```
@@ -36,24 +46,28 @@
    </template>
 
    <script setup>
-   import { ref, onMounted } from 'vue';
-   import { useMenuSync } from './components/treemenu/treemenu-fix.js';
-   
+   import { ref, onMounted } from "vue";
+   import { useMenuSync } from "./components/treemenu/treemenu-fix.js";
+
    const treemenuRef = ref(null);
    const { activeIndex } = useMenuSync();
-   
+
    onMounted(() => {
      // 监听activeIndex的变化，并手动更新treemenu组件的activeIndex
-     watch(activeIndex, (newVal) => {
-       if (treemenuRef.value && treemenuRef.value.$el) {
-         const menu = treemenuRef.value.$el.querySelector('.el-menu');
-         if (menu) {
-           menu.setAttribute('default-active', newVal);
-           // 触发菜单的更新
-           menu.click();
+     watch(
+       activeIndex,
+       (newVal) => {
+         if (treemenuRef.value && treemenuRef.value.$el) {
+           const menu = treemenuRef.value.$el.querySelector(".el-menu");
+           if (menu) {
+             menu.setAttribute("default-active", newVal);
+             // 触发菜单的更新
+             menu.click();
+           }
          }
-       }
-     }, { immediate: true });
+       },
+       { immediate: true },
+     );
    });
    </script>
    ```
@@ -66,7 +80,7 @@
    <!-- EnhancedTreemenu.vue -->
    <template>
      <div>
-       <treemenu 
+       <treemenu
          :default-active="activeIndex"
          @update:activeIndex="updateActiveIndex"
        />
@@ -74,17 +88,17 @@
    </template>
 
    <script setup>
-   import { watch, defineEmits, defineProps } from 'vue';
-   import treemenu from './treemenu.vue';
-   import { useMenuSync } from './treemenu-fix.js';
-   
-   const props = defineProps(['modelValue']);
-   const emit = defineEmits(['update:modelValue']);
-   
+   import { watch, defineProps } from "vue";
+   import treemenu from "./treemenu.vue";
+   import { useMenuSync } from "./treemenu-fix.js";
+
+   const props = defineProps(["modelValue"]);
+   const emit = defineEmits(["update:modelValue"]);
+
    const { activeIndex } = useMenuSync();
-   
+
    const updateActiveIndex = (index) => {
-     emit('update:modelValue', index);
+     emit("update:modelValue", index);
    };
    </script>
    ```

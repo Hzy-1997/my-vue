@@ -52,3 +52,12 @@ export const operatePrice = (data) => {
         data
     })
 }
+
+// 获取票务日期价格（日历预览）
+export const getTicketDatePrices = (data) => {
+    return request({
+        url: '/ticket/getTicketDatePrices',
+        method: 'get',
+        data
+    })
+}

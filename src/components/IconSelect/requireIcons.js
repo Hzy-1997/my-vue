@@ -49,12 +49,11 @@ const iconModules = import.meta.glob("../../assets/icons/svg/*.svg");
 // 提取文件名（不包括路径和扩展名）
 const icons = Object.keys(iconModules).map((filePath) => {
     // 从路径中提取文件名，例如从 '../../assets/icons/svg/user.svg' 提取 'user'
-    // console.log("filePath是啥", filePath);
     const parts = filePath.split("/");
     const fileName = parts[parts.length - 1];
-    // console.log("fileName是啥", fileName);
-    return fileName.replace(".svg", "");
+    return fileName.replace(".svg", ""); // 去掉文件扩展名
 });
+
 
 
 export default icons;

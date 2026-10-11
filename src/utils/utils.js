@@ -86,8 +86,62 @@ const cryptoUtil = {
     }
 };
 
+/**
+ * 日期格式化函数 - 增强版
+ * 支持 Date 对象、ISO字符串、时间戳
+ */
+const formatDate = (date) => {
+    if (!date) return "";
+    let dateObj;
+
+    // 判断输入类型并转换为Date对象
+    if (date instanceof Date) {
+        dateObj = date;
+    } else if (typeof date === "string" && date.includes("T")) {
+        // ISO字符串格式，如 "2026-02-04T00:00:00.000Z"
+        dateObj = new Date(date);
+    } else if (typeof date === "number" || !isNaN(date)) {
+        // 时间戳
+        dateObj = new Date(Number(date));
+    } else if (typeof date === "string") {
+        // 尝试解析其他日期字符串
+        dateObj = new Date(date);
+    } else {
+        return "";
+    }
+
+    // 验证Date对象是否有效
+    if (isNaN(dateObj.getTime())) {
+        return "";
+    }
+
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    // 格式化为YYYY-MM-DD
+    return `${year}-${month}-${day}`;
+};
+
+// 处理图片上传
+const imageEdit = (data) => {
+    console.log(data);
+    let arr = [];
+    if (Array.isArray(data)) {
+        data.forEach((element) => {
+            if (element && element.url) {
+                console.log(element);
+                arr.push(element.url.split("aliyuncs.com")[1]);
+            }
+        });
+        return arr.join(",");
+    }
+    return data;
+};
+
 
 export {
     executionStatus,
-    cryptoUtil
+    cryptoUtil,
+    formatDate,
+    imageEdit
 };

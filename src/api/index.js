@@ -22,6 +22,8 @@ import * as hotelApi from './hotel';
 import * as paymentApi from './payment';
 import * as logApi from './log';
 import * as writeOffApi from './WriteOff';
+import * as comboApi from './comboApi';
+import * as appointmentApi from './appointment';
 
 
 
@@ -40,5 +42,7 @@ export {
     hotelApi,
     paymentApi,
     logApi,
-    writeOffApi
+    writeOffApi,
+    comboApi,
+    appointmentApi
 };

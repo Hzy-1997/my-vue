@@ -181,7 +181,7 @@
 import { ref, onMounted, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import ImageUpload from "../../components/ImageUpload/index.vue"; // 组件使用<script setup>自动作为默认导出
-import { ticketingApi, commonApi, paymentApi } from "../../api/index.js";
+import { ticketingApi, commonApi, paymentApi, hotelApi } from "../../api/index.js";
 import RichTextEditor from "../../components/editor/index.vue";
 
 const dialogVisible = ref(false);
@@ -453,26 +453,59 @@ const utils = {
   },
 };
 
+
 const handleBuy = async () => {
   let orderState = await paymentApi.getOrderNo({
     goodsId: 10,
     userId: 1,
     count: 1,
   });
-  console.log("返回了什么", orderState);
+
   if (orderState.code !== 200) return alert("获取订单号失败：" + orderState.message);
 
   let paymentState = await paymentApi.payment({
     subject: "测试商品",
-    totalAmount: utils.generateAmount(), // 随机金额
+    order: "ticket",
+    // totalAmount: utils.generateAmount(), // 随机金额
     outTradeNo: orderState.data.orderNo, // 随机订单号
   });
+
   console.log("返回了什么", paymentState);
   if (paymentState.code === 200) {
     // 跳转到支付宝支付页面
     window.location.href = paymentState.data;
   } else {
     alert("支付失败：" + paymentState.message);
+  }
+};
+
+// 酒店预定
+const handleHotelBuy = async () => {
+  console.log("酒店预定");
+  let res = await hotelApi.bookRoom({
+    goodsId: 1,
+    roomTypeId: 2,
+    count: 2,
+    userId: 1,
+    userCard: "513721199",
+    startDate: "2026-07-20",
+    endDate: "2026-07-22",
+  });
+
+  if (res.code == 200) {
+    let paymentState = await paymentApi.payment({
+      subject: "测试商品",
+      order: "hotel",
+      totalAmount: res.data.totalPrice, // 随机金额
+      outTradeNo: res.data.orderNo, // 随机订单号
+    });
+
+    if (paymentState.code === 200) {
+      // 跳转到支付宝支付页面
+      window.location.href = paymentState.data;
+    } else {
+      alert("支付失败：" + paymentState.message);
+    }
   }
 };
 </script>

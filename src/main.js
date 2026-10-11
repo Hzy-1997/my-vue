@@ -25,8 +25,11 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { createPinia } from 'pinia'
 const pinia = createPinia()
 
-// // 引入组件全局注册
+// 引入组件全局注册
 import SvgIcon from "./components/IconSelect/svgIcon.vue"
+
+// 引入 SVG 雪碧图（vite-plugin-svg-icons 生成的虚拟模块）
+import "virtual:svg-icons-register"
 
 // 引入权限指令
 import { permissionDirective } from './directives/permission.js'
