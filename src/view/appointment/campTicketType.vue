@@ -10,7 +10,7 @@
           placeholder="请选择夏令营"
           filterable
           clearable
-          style="width: 180px; margin-right: 20 px"
+          style="width: 180px; margin-right: 20px"
         >
           <el-option
             v-for="item in campOptions"
