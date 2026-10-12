@@ -90,3 +90,86 @@ export const parkingSpotOperation = (data) => {
     data,
   });
 };
+
+// ==================== 景区公交 ====================
+
+// 景区公交商品操作（创建/更新/删除）
+export const scenicBusOperation = (data) => {
+  return request({
+    url: "/appointment/scenicBusOperation",
+    method: "post",
+    data,
+  });
+};
+
+// 景区公交商品列表
+export const getScenicBusList = (params) => {
+  return request({
+    url: "/appointment/scenicBusList",
+    method: "get",
+    params,
+  });
+};
+
+// 景区公交商品详情
+export const getScenicBusDetail = (params) => {
+  return request({
+    url: "/appointment/scenicBusDetail",
+    method: "get",
+    params,
+  });
+};
+
+// 景区公交购票下单（一单多票、一票一码）
+export const scenicBusAppointment = (data) => {
+  return request({
+    url: "/appointment/scenicBusAppointment",
+    method: "post",
+    data,
+  });
+};
+
+// 景区公交订单支付（占位，待接入支付渠道）
+export const scenicBusPay = (data) => {
+  return request({
+    url: "/appointment/scenicBusPay",
+    method: "post",
+    data,
+  });
+};
+
+// 景区公交订单列表
+export const getScenicBusOrderList = (params) => {
+  return request({
+    url: "/appointment/scenicBusOrderList",
+    method: "get",
+    params,
+  });
+};
+
+// 景区公交订单详情（含车票明细）
+export const getScenicBusOrderDetail = (params) => {
+  return request({
+    url: "/appointment/scenicBusOrderDetail",
+    method: "get",
+    params,
+  });
+};
+
+// 车票核销（一票一码，单张核销）
+export const scenicBusVerify = (data) => {
+  return request({
+    url: "/appointment/scenicBusVerify",
+    method: "post",
+    data,
+  });
+};
+
+// 单张车票退票
+export const scenicBusRefund = (data) => {
+  return request({
+    url: "/appointment/scenicBusRefund",
+    method: "post",
+    data,
+  });
+};

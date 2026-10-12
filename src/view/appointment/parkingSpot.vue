@@ -10,7 +10,7 @@
           placeholder="请选择停车场"
           filterable
           clearable
-          style="width: 200px"
+          style="width: 200px; margin-right: 20px"
         >
           <el-option
             v-for="item in parkingOptions"
@@ -23,7 +23,7 @@
           v-model="queryForm.status"
           placeholder="车位状态"
           clearable
-          style="width: 140px"
+          style="width: 140px; margin-right: 30px"
         >
           <el-option label="启用" :value="1" />
           <el-option label="停用维护" :value="2" />
