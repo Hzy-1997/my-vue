@@ -13,7 +13,4 @@
 <style lang="scss">
 @use "./assets/style/index" as *;
 
-// * {
-//   cursor: none !important;
-// }
 </style>
