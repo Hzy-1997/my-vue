@@ -41,7 +41,7 @@
             ></el-input>
 
             <el-select
-              v-model="queryForm.orderStatus"
+              v-model="queryForm.payStatus"
               placeholder="订单状态"
               style="width: 180px; margin-right: 20px"
               clearable
@@ -160,16 +160,16 @@
           label="退款金额"
           align="center"
         ></el-table-column>
-        <el-table-column prop="status" label="订单状态" align="center">
+        <el-table-column prop="payStatus" label="订单状态" align="center">
           <template #default="scope">
-            <el-tag :type="getOrderStatusType(scope.row.status)">
-              {{ getOrderStatusText(scope.row.status) }}
+            <el-tag :type="getPayStatusType(scope.row.payStatus)">
+              {{ getOrderStatusText(scope.row.payStatus) }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="verifyStatus" label="核销状态" align="center">
           <template #default="scope">
-            <el-tag :type="getOrderStatusType(scope.row.verifyStatus)">
+            <el-tag :type="getVerifyStatusType(scope.row.verifyStatus)">
               {{ getVerifyStatusText(scope.row.verifyStatus) }}
             </el-tag>
           </template>
@@ -221,7 +221,7 @@ const queryForm = ref({
   outTradeNo: "", // 订单号
   userPhone: "", // 手机号
   userCard: "", // 身份证号
-  orderStatus: "", // 订单状态
+  payStatus: "", // 订单状态
   startDate: "", // 开始日期
   endDate: "", // 结束日期
 });
@@ -231,26 +231,26 @@ let dateRange = ref([]); //日期范围
 // 导出格式
 const exportFormat = ref("xlsx"); // 默认导出Excel格式
 
-//订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
+//订单状态（payStatus 统一五态）：1-待支付，2-已支付，3-已完成，4-已退款，5-已取消
 let orderOptions = ref([
   {
-    label: "待付款",
+    label: "待支付",
     value: "1",
   },
   {
-    label: "待核销",
+    label: "已支付",
     value: "2",
   },
   {
-    label: "待退款",
+    label: "已完成",
     value: "3",
   },
   {
-    label: "已完成",
+    label: "已退款",
     value: "4",
   },
   {
-    label: "已退款",
+    label: "已取消",
     value: "5",
   },
 ]);
@@ -332,11 +332,13 @@ const getTicketList = async () => {
 
 // 查询订单
 const handleQuery = async () => {
+  console.log("查询订单:", queryForm.value);
   if (
     !queryForm.value.outTradeNo &&
     !queryForm.value.userPhone &&
-    !queryForm.value.userCard &&
-    !dateRange.value.length > 0
+    !queryForm.value.userIdCard &&
+    !queryForm.value.payStatus &&
+    !dateRange.value?.length //  dateRange 的判空，防止 undefined
   ) {
     ElMessage.error("请输入查询条件");
     return;
@@ -382,14 +384,24 @@ const handleCurrentChange = (val) => {
   getOrderList();
 };
 
-// 获取订单状态标签类型
-const getOrderStatusType = (status) => {
+// 获取支付主状态标签类型（payStatus 五态）
+const getPayStatusType = (status) => {
   const typeMap = {
-    1: "warning",
-    2: "success",
-    3: "info",
-    4: "primary",
-    5: "danger",
+    1: "warning", // 待支付
+    2: "primary", // 已支付
+    3: "success", // 已完成
+    4: "danger", // 已退款
+    5: "info", // 已取消
+  };
+  return typeMap[status] || "info";
+};
+
+// 获取核销状态标签类型（verifyStatus 三态）
+const getVerifyStatusType = (status) => {
+  const typeMap = {
+    1: "warning", // 待核销
+    2: "success", // 已核销
+    3: "danger", // 已过期
   };
   return typeMap[status] || "info";
 };
@@ -399,9 +411,9 @@ const getOrderStatusText = (status) => {
   const textMap = {
     1: "待支付",
     2: "已支付",
-    3: "已取消",
-    4: "已完成",
-    5: "已退款",
+    3: "已完成",
+    4: "已退款",
+    5: "已取消",
   };
   return textMap[status] || "未知";
 };
@@ -409,7 +421,7 @@ const getVerifyStatusText = (status) => {
   const textMap = {
     1: "待核销",
     2: "已核销",
-    3: "已取消",
+    3: "已过期",
   };
   return textMap[status] || "未知";
 };

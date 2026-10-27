@@ -188,19 +188,19 @@ const generateRandomData = () => {
     },
     {
       value: Math.floor(Math.random() * 1000) + 300,
-      name: `待核销：${Math.floor(Math.random() * 1000) + 300}单`,
+      name: `已支付：${Math.floor(Math.random() * 1000) + 300}单`,
     },
     {
       value: Math.floor(Math.random() * 800) + 200,
-      name: `已取消：${Math.floor(Math.random() * 800) + 200}单`,
+      name: `已完成：${Math.floor(Math.random() * 800) + 200}单`,
     },
     {
       value: Math.floor(Math.random() * 700) + 200,
-      name: `已完成：${Math.floor(Math.random() * 700) + 200}单`,
+      name: `已退款：${Math.floor(Math.random() * 700) + 200}单`,
     },
     {
       value: Math.floor(Math.random() * 500) + 100,
-      name: `已退款${Math.floor(Math.random() * 500) + 100}单`,
+      name: `已取消${Math.floor(Math.random() * 500) + 100}单`,
     },
   ];
 };
@@ -251,7 +251,7 @@ onMounted(() => {
           name: "票务订单状态",
           type: "pie",
           radius: "50%",
-          // 订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
+          // 订单状态（payStatus 统一五态）：1-待支付，2-已支付，3-已完成，4-已退款，5-已取消
           data: generateRandomData(),
           emphasis: {
             // 鼠标悬停时的样式
@@ -283,7 +283,7 @@ onMounted(() => {
           name: "票务订单状态",
           type: "pie",
           radius: "50%",
-          // 订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
+          // 订单状态（payStatus 统一五态）：1-待支付，2-已支付，3-已完成，4-已退款，5-已取消
           data: generateRandomData(),
           emphasis: {
             // 鼠标悬停时的样式
@@ -331,7 +331,7 @@ onMounted(() => {
           name: "酒店订单状态",
           type: "pie",
           radius: "50%",
-          // 订单状态：1-待支付，2-待核销，3-已取消，4-已完成，5-已退款
+          // 订单状态（payStatus 统一五态）：1-待支付，2-已支付，3-已完成，4-已退款，5-已取消
           data: generateRandomData(),
           emphasis: {
             // 鼠标悬停时的样式
