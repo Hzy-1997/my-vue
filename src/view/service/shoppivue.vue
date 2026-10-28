@@ -175,7 +175,10 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="轮播图" prop="carouselImages">
-            <ImageUpload :limit="5" v-model="formData.carouselImages" />
+            <ImageUpload
+              :limit="5"
+              category="shopping"
+              v-model="formData.carouselImages" />
           </el-form-item>
           <el-form-item label="营业时间" prop="businessHours">
             <el-input
@@ -354,7 +357,7 @@ const handleImageUpload = async (file, insertFn) => {
   const fd = new FormData();
   fd.append("file", file);
   try {
-    let res = await commonApi.uploadImg(fd);
+    let res = await commonApi.uploadImg(fd, "shopping");
     if (res.code !== 200) {
       ElMessage.error("上传失败: " + res.message);
       return;

@@ -109,10 +109,17 @@
             <el-input v-model="formData.stock" placeholder="请输入房型库存"></el-input>
           </el-form-item>
           <el-form-item label="房间图片">
-            <ImageUpload :limit="1" v-model="formData.image"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="hotel"
+              v-model="formData.image"
+            ></ImageUpload>
           </el-form-item>
           <el-form-item label="房间轮播图">
-            <ImageUpload :limit="5" v-model="formData.banner"></ImageUpload>
+            <ImageUpload
+              :limit="5"
+              category="hotel"
+              v-model="formData.banner"></ImageUpload>
           </el-form-item>
           <el-form-item label="房型描述">
             <RichTextEditor
@@ -428,7 +435,7 @@ const handleImageUpload = async (file, insertFn) => {
   const formData = new FormData();
   formData.append("file", file); // file 是用户选择的图片文件
   try {
-    let res = await commonApi.uploadImg(formData);
+    let res = await commonApi.uploadImg(formData,"hotel");
     if (res.code !== 200) {
       alert("上传失败: " + res.message);
       return;

@@ -155,10 +155,18 @@
             </div>
           </el-form-item>
           <el-form-item label="封面图" prop="image">
-            <ImageUpload :limit="1" v-model="formData.image"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="parking"
+              v-model="formData.image"
+            ></ImageUpload>
           </el-form-item>
           <el-form-item label="轮播图" prop="carouselImages">
-            <ImageUpload :limit="5" v-model="formData.carouselImages"></ImageUpload>
+            <ImageUpload
+              :limit="5"
+              category="parking"
+              v-model="formData.carouselImages"
+            ></ImageUpload>
           </el-form-item>
           <el-form-item label="详细介绍" prop="description">
             <el-input

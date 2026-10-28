@@ -29,18 +29,9 @@
         <el-button type="primary" @click="handleCreate">创建班次</el-button>
       </div>
 
-      <el-table
-        :data="tableData"
-        height="calc(100vh - 255px)"
-        style="width: 100%"
-      >
+      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
         <el-table-column prop="id" label="ID" width="60" align="center" />
-        <el-table-column
-          prop="title"
-          label="班次名称"
-          width="160"
-          align="center"
-        />
+        <el-table-column prop="title" label="班次名称" width="160" align="center" />
         <el-table-column prop="image" label="封面图" width="130" align="center">
           <template #default="scope">
             <el-image
@@ -55,30 +46,15 @@
                 {{ ticketTypeMap[row.ticketType] || row.ticketType }}
               </template>
             </el-table-column> -->
-        <el-table-column
-          prop="timeSlot"
-          label="时段"
-          width="120"
-          align="center"
-        />
-        <el-table-column
-          prop="price"
-          label="售价(￥)"
-          width="90"
-          align="center"
-        />
+        <el-table-column prop="timeSlot" label="时段" width="120" align="center" />
+        <el-table-column prop="price" label="售价(￥)" width="90" align="center" />
         <el-table-column
           prop="originalPrice"
           label="原价(￥)"
           width="90"
           align="center"
         />
-        <el-table-column
-          prop="totalStock"
-          label="总放票量"
-          width="90"
-          align="center"
-        />
+        <el-table-column prop="totalStock" label="总放票量" width="90" align="center" />
         <el-table-column label="售卖区间" width="200" align="center">
           <template #default="{ row }">
             {{ row.startDate }} ~ {{ row.endDate }}
@@ -106,12 +82,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createdAt"
-          label="创建时间"
-          width="170"
-          align="center"
-        />
+        <el-table-column prop="createdAt" label="创建时间" width="170" align="center" />
         <el-table-column label="操作" align="center" fixed="right">
           <template #default="{ row }">
             <el-button
@@ -122,18 +93,10 @@
               @click="handleBuy(row)"
               >购票</el-button
             >
-            <el-button
-              type="primary"
-              plain
-              size="small"
-              @click="handleEdit(row)"
+            <el-button type="primary" plain size="small" @click="handleEdit(row)"
               >编辑</el-button
             >
-            <el-button
-              type="danger"
-              plain
-              size="small"
-              @click="handleDelete(row)"
+            <el-button type="danger" plain size="small" @click="handleDelete(row)"
               >删除</el-button
             >
           </template>
@@ -163,7 +126,10 @@
             <el-input v-model="formData.title" placeholder="请输入班次名称" />
           </el-form-item>
           <el-form-item label="封面图" prop="image">
-            <ImageUpload :limit="1" v-model="formData.image"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="bus"
+              v-model="formData.image"></ImageUpload>
           </el-form-item>
           <el-form-item label="开始售卖日期" prop="startDate">
             <el-date-picker
@@ -196,10 +162,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="时段" prop="timeSlot">
-            <el-input
-              v-model="formData.timeSlot"
-              placeholder="如：08:00-12:00"
-            />
+            <el-input v-model="formData.timeSlot" placeholder="如：08:00-12:00" />
           </el-form-item>
           <el-form-item label="售价(￥)" prop="price">
             <el-input-number
@@ -229,10 +192,7 @@
             />
           </el-form-item>
           <el-form-item label="车辆起点" prop="startStation">
-            <el-input
-              v-model="formData.startStation"
-              placeholder="请输入起点"
-            />
+            <el-input v-model="formData.startStation" placeholder="请输入起点" />
           </el-form-item>
           <el-form-item prop="endStation" label="车辆终点">
             <el-input v-model="formData.endStation" placeholder="请输入终点" />
@@ -356,10 +316,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="buyVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="buyLoading"
-            @click="handleBuySubmit"
+          <el-button type="primary" :loading="buyLoading" @click="handleBuySubmit"
             >下单</el-button
           >
         </span>
@@ -439,9 +396,7 @@ let buyForm = ref(buyFormInfo());
 
 // 合计金额 = 单价 × 数量
 const totalAmount = computed(() => {
-  return (
-    Number(buyRow.value.price || 0) * (buyForm.value.quantity || 0)
-  ).toFixed(2);
+  return (Number(buyRow.value.price || 0) * (buyForm.value.quantity || 0)).toFixed(2);
 });
 
 // ------------------------函数方法----------------------
@@ -513,14 +468,12 @@ const handleSubmit = async () => {
   // 编辑器图片处理：清理编辑过程中删除的图片
   if (Array.isArray(initialImages.value) && initialImages.value.length > 0) {
     let deleteImageList = initialImages.value.filter(
-      (item) => !retainedImages.value.some((img) => item === img.src),
+      (item) => !retainedImages.value.some((img) => item === img.src)
     );
     if (deleteImageList.length > 0) {
       deleteImageList = deleteImageList
         .map((url) => {
-          let match = url.match(
-            /\/ceshiUp\/\d+\/\d+\/\d+\/[a-f0-9]+\.[a-z0-9]+/i,
-          );
+          let match = url.match(/\/ceshiUp\/\d+\/\d+\/\d+\/[a-f0-9]+\.[a-z0-9]+/i);
           return match ? match[0].slice(1) : "";
         })
         .filter(Boolean);
@@ -589,15 +542,11 @@ const handleEdit = async (row) => {
 
 // 删除
 const handleDelete = (row) => {
-  ElMessageBox.confirm(
-    "该班次下存在订单时无法删除；确定要删除该班次吗?",
-    "提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    },
-  )
+  ElMessageBox.confirm("该班次下存在订单时无法删除；确定要删除该班次吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
     .then(async () => {
       let data = { id: row.id, action: "delete" };
       let res = await appointmentApi.scenicBusOperation(data);
@@ -654,7 +603,7 @@ const handleBuySubmit = async () => {
     ElMessageBox.alert(
       `订单编号：${res.data.orderNumber}<br/>订单金额：￥${res.data.orderAmount}<br/>车票数量：${res.data.ticketCount} 张（一票一码）<br/><span style="color:#e6a23c">请于10分钟内完成支付</span>`,
       "下单成功",
-      { dangerouslyUseHTMLString: true, confirmButtonText: "知道了" },
+      { dangerouslyUseHTMLString: true, confirmButtonText: "知道了" }
     );
   } else {
     ElMessage.error(res.message);
@@ -666,7 +615,7 @@ const handleImageUpload = async (file, insertFn) => {
   const uploadData = new FormData();
   uploadData.append("file", file);
   try {
-    let res = await commonApi.uploadImg(uploadData);
+    let res = await commonApi.uploadImg(uploadData, "bus");
     if (res.code !== 200) {
       ElMessage.error("上传失败: " + res.message);
       return;

@@ -182,10 +182,16 @@
             </div>
           </el-form-item>
           <el-form-item label="封面图" prop="homeImg">
-            <ImageUpload :limit="1" v-model="createForm.homeImg"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="ticket"
+              v-model="createForm.homeImg"></ImageUpload>
           </el-form-item>
           <el-form-item label="轮播图" prop="banners">
-            <ImageUpload :limit="3" v-model="createForm.banners"></ImageUpload>
+            <ImageUpload
+              :limit="3"
+              category="ticket"
+              v-model="createForm.banners"></ImageUpload>
           </el-form-item>
 
           <el-form-item label="是否被推荐" prop="isRecommended">
@@ -722,7 +728,7 @@ const handleImageUpload = async (file, insertFn) => {
   const formData = new FormData();
   formData.append("file", file); // file 是用户选择的图片文件
   try {
-    let res = await commonApi.uploadImg(formData);
+    let res = await commonApi.uploadImg(formData, "ticket");
     if (res.code !== 200) {
       alert("上传失败: " + res.message);
       return;

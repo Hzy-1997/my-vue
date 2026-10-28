@@ -96,7 +96,10 @@
             <el-input v-model="formData.title" placeholder="请输入攻略名称"></el-input>
           </el-form-item>
           <el-form-item label="封面图" prop="cover">
-            <ImageUpload :limit="1" v-model="formData.cover" />
+            <ImageUpload
+              :limit="1"
+              category="strategy"
+              v-model="formData.cover" />
           </el-form-item>
           <el-form-item label="攻略状态" prop="status">
             <el-radio-group v-model="formData.status">
@@ -230,7 +233,7 @@ const handleImageUpload = async (file, insertFn) => {
   const formData = new FormData();
   formData.append("file", file); // file 是用户选择的图片文件
   try {
-    let res = await commonApi.uploadImg(formData);
+    let res = await commonApi.uploadImg(formData, "strategy");
     if (res.code !== 200) {
       alert("上传失败: " + res.message);
       return;
