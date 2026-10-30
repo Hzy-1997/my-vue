@@ -108,10 +108,16 @@
           </el-form-item>
 
           <el-form-item label="封面图" prop="homeImg">
-            <ImageUpload :limit="1" v-model="formData.images"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="hotel"
+              v-model="formData.images"></ImageUpload>
           </el-form-item>
           <el-form-item label="轮播图" prop="banners">
-            <ImageUpload :limit="3" v-model="formData.banner"></ImageUpload>
+            <ImageUpload
+              :limit="3"
+              category="hotel"
+              v-model="formData.banner"></ImageUpload>
           </el-form-item>
 
           <el-form-item label="酒店星级" prop="star_rating">
@@ -470,7 +476,7 @@ const handleImageUpload = async (file, insertFn) => {
   const formData = new FormData();
   formData.append("file", file); // file 是用户选择的图片文件
   try {
-    let res = await commonApi.uploadImg(formData);
+    let res = await commonApi.uploadImg(formData, "hotel");
     if (res.code !== 200) {
       alert("上传失败: " + res.message);
       return;

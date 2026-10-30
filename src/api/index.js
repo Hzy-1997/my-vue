@@ -24,6 +24,7 @@ import * as logApi from './log';
 import * as writeOffApi from './WriteOff';
 import * as comboApi from './comboApi';
 import * as appointmentApi from './appointment';
+import * as serviceSuggestionsApi from './serviceSuggestions';
 
 
 
@@ -44,5 +45,6 @@ export {
     logApi,
     writeOffApi,
     comboApi,
-    appointmentApi
+    appointmentApi,
+    serviceSuggestionsApi
 };

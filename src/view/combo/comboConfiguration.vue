@@ -144,10 +144,18 @@
           </el-form-item>
 
           <el-form-item label="套餐封面图" prop="coverImage">
-            <ImageUpload :limit="1" v-model="formData.coverImage"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="combo"
+              v-model="formData.coverImage"
+            ></ImageUpload>
           </el-form-item>
           <el-form-item label="套餐轮播图" prop="bannerImages">
-            <ImageUpload :limit="5" v-model="formData.bannerImages"></ImageUpload>
+            <ImageUpload
+              :limit="5"
+              category="combo"
+              v-model="formData.bannerImages"
+            ></ImageUpload>
           </el-form-item>
 
           <el-form-item label="原价" prop="marketPrice">

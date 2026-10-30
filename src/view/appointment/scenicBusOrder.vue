@@ -31,15 +31,15 @@
         </el-select>
         <el-select
           style="width: 140px"
-          v-model="queryForm.orderStatus"
+          v-model="queryForm.payStatus"
           placeholder="订单状态"
           clearable
         >
           <el-option label="待支付" :value="1" />
-          <el-option label="待使用" :value="2" />
+          <el-option label="已支付" :value="2" />
           <el-option label="已完成" :value="3" />
-          <el-option label="已取消" :value="4" />
-          <el-option label="已退款" :value="5" />
+          <el-option label="已退款" :value="4" />
+          <el-option label="已取消" :value="5" />
         </el-select>
         <el-date-picker
           style="width: 150px"
@@ -78,17 +78,10 @@
         <el-table-column prop="totalAmount" label="总额(￥)" width="90" align="center" />
         <el-table-column prop="orderAmount" label="实付(￥)" width="90" align="center" />
         <el-table-column prop="refundAmount" label="退款(￥)" width="90" align="center" />
-        <el-table-column label="支付状态" width="90" align="center">
+        <el-table-column label="订单状态" width="90" align="center">
           <template #default="{ row }">
             <el-tag :type="payStatusType[row.payStatus]">{{
               payStatusMap[row.payStatus]
-            }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单状态" width="90" align="center">
-          <template #default="{ row }">
-            <el-tag :type="orderStatusType[row.orderStatus]">{{
-              orderStatusMap[row.orderStatus]
             }}</el-tag>
           </template>
         </el-table-column>
@@ -99,7 +92,7 @@
               >详情</el-button
             >
             <el-button
-              v-if="row.orderStatus == 1"
+              v-if="row.payStatus == 1"
               type="warning"
               plain
               size="small"
@@ -133,8 +126,8 @@
               orderDetail.orderNumber
             }}</el-descriptions-item>
             <el-descriptions-item label="订单状态">
-              <el-tag :type="orderStatusType[orderDetail.orderStatus]">{{
-                orderStatusMap[orderDetail.orderStatus]
+              <el-tag :type="payStatusType[orderDetail.payStatus]">{{
+                payStatusMap[orderDetail.payStatus]
               }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="用户ID">{{
@@ -170,11 +163,6 @@
             <el-descriptions-item label="退款金额(￥)">{{
               orderDetail.refundAmount || 0
             }}</el-descriptions-item>
-            <el-descriptions-item label="支付状态">
-              <el-tag :type="payStatusType[orderDetail.payStatus]">{{
-                payStatusMap[orderDetail.payStatus]
-              }}</el-tag>
-            </el-descriptions-item>
             <el-descriptions-item label="支付时间">{{
               orderDetail.paymentTime || "-"
             }}</el-descriptions-item>
@@ -285,12 +273,9 @@ import { appointmentApi } from "../../api/index.js";
 
 // 状态映射（与后端模型 comment 一致）
 const ticketTypeMap = { 1: "成人", 2: "儿童", 3: "学生", 4: "其他" };
-// 订单状态 1待支付 2待使用 3已完成 4已取消 5已退款
-const orderStatusMap = { 1: "待支付", 2: "待使用", 3: "已完成", 4: "已取消", 5: "已退款" };
-const orderStatusType = { 1: "warning", 2: "primary", 3: "success", 4: "info", 5: "danger" };
-// 支付状态 1待支付 2已支付 3已退款
-const payStatusMap = { 1: "待支付", 2: "已支付", 3: "已退款" };
-const payStatusType = { 1: "warning", 2: "success", 3: "danger" };
+// 订单状态（payStatus 统一五态）1待支付 2已支付 3已完成 4已退款 5已取消
+const payStatusMap = { 1: "待支付", 2: "已支付", 3: "已完成", 4: "已退款", 5: "已取消" };
+const payStatusType = { 1: "warning", 2: "primary", 3: "success", 4: "danger", 5: "info" };
 // 票状态 1待乘车 2已核销 3已过期 4已退票
 const verifyStatusMap = { 1: "待乘车", 2: "已核销", 3: "已过期", 4: "已退票" };
 const verifyStatusType = { 1: "primary", 2: "success", 3: "info", 4: "danger" };
@@ -299,7 +284,7 @@ let queryForm = ref({
   orderNumber: "",
   userId: "",
   scenicBusId: null,
-  orderStatus: null,
+  payStatus: null,
   rideDate: "",
 });
 
@@ -352,7 +337,7 @@ let handleReset = () => {
     orderNumber: "",
     userId: "",
     scenicBusId: null,
-    orderStatus: null,
+    payStatus: null,
     rideDate: "",
   };
   pagination.value.currentPage = 1;

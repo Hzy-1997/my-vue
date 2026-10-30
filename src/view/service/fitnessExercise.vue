@@ -173,7 +173,10 @@
             </div>
           </el-form-item>
           <el-form-item label="轮播图" prop="carouselImages">
-            <ImageUpload :limit="5" v-model="formData.carouselImages" />
+            <ImageUpload
+              :limit="5"
+              category="sport"
+              v-model="formData.carouselImages" />
           </el-form-item>
           <el-form-item label="营业时间" prop="businessHours">
             <el-input
@@ -367,7 +370,7 @@ const handleImageUpload = async (file, insertFn) => {
   fd.append("file", file);
   console.log("上传图片:", fd);
   try {
-    let res = await commonApi.uploadImg(fd);
+    let res = await commonApi.uploadImg(fd,"sport");
     console.log("图片信息:", res);
 
     if (res.code !== 200) {

@@ -126,7 +126,10 @@
             <el-input v-model="formData.title" placeholder="请输入班次名称" />
           </el-form-item>
           <el-form-item label="封面图" prop="image">
-            <ImageUpload :limit="1" v-model="formData.image"></ImageUpload>
+            <ImageUpload
+              :limit="1"
+              category="bus"
+              v-model="formData.image"></ImageUpload>
           </el-form-item>
           <el-form-item label="开始售卖日期" prop="startDate">
             <el-date-picker
@@ -187,6 +190,12 @@
               placeholder="请输入总放票量"
               style="width: 300px"
             />
+          </el-form-item>
+          <el-form-item label="车辆起点" prop="startStation">
+            <el-input v-model="formData.startStation" placeholder="请输入起点" />
+          </el-form-item>
+          <el-form-item prop="endStation" label="车辆终点">
+            <el-input v-model="formData.endStation" placeholder="请输入终点" />
           </el-form-item>
           <el-form-item label="详细介绍" prop="description">
             <RichTextEditor
@@ -380,6 +389,8 @@ const buyFormInfo = () => ({
   contactName: "",
   rideDate: "",
   quantity: 1,
+  startStation: "", // 起点
+  endStation: "",
 });
 let buyForm = ref(buyFormInfo());
 
@@ -604,7 +615,7 @@ const handleImageUpload = async (file, insertFn) => {
   const uploadData = new FormData();
   uploadData.append("file", file);
   try {
-    let res = await commonApi.uploadImg(uploadData);
+    let res = await commonApi.uploadImg(uploadData, "bus");
     if (res.code !== 200) {
       ElMessage.error("上传失败: " + res.message);
       return;
