@@ -5,8 +5,17 @@
     <div class="query-form">
       <div class="title">游客服务管理</div>
       <div class="query-item">
-        <el-input v-model="queryForm.title" placeholder="请输入服务标题" />
-        <el-select v-model="queryForm.status" placeholder="服务状态" clearable>
+        <el-input
+          style="min-width: 180px"
+          v-model="queryForm.title"
+          placeholder="请输入服务标题"
+        />
+        <el-select
+          style="min-width: 180px; margin-right: 20px"
+          v-model="queryForm.status"
+          placeholder="服务状态"
+          clearable
+        >
           <el-option label="正常" :value="1" />
           <el-option label="下架" :value="2" />
         </el-select>
@@ -20,9 +29,18 @@
         <el-button type="primary" @click="handleCreate">创建服务点位</el-button>
       </div>
 
-      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
+      <el-table
+        :data="tableData"
+        height="calc(100vh - 255px)"
+        style="width: 100%"
+      >
         <el-table-column prop="id" label="ID" width="60" align="center" />
-        <el-table-column prop="title" label="服务标题" min-width="130" align="center" />
+        <el-table-column
+          prop="title"
+          label="服务标题"
+          min-width="130"
+          align="center"
+        />
         <el-table-column
           prop="shortDesc"
           label="简短描述"
@@ -69,7 +87,12 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="sortOrder" label="排序" width="180" align="center">
+        <el-table-column
+          prop="sortOrder"
+          label="排序"
+          width="180"
+          align="center"
+        >
           <template #default="{ row }">
             <el-input-number
               v-model="row.sortOrder"
@@ -79,13 +102,26 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" width="180" align="center" />
+        <el-table-column
+          prop="createdAt"
+          label="创建时间"
+          width="180"
+          align="center"
+        />
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" plain size="small" @click="handleEdit(row)"
+            <el-button
+              type="primary"
+              plain
+              size="small"
+              @click="handleEdit(row)"
               >编辑</el-button
             >
-            <el-button type="danger" plain size="small" @click="handleDelete(row)"
+            <el-button
+              type="danger"
+              plain
+              size="small"
+              @click="handleDelete(row)"
               >删除</el-button
             >
           </template>
@@ -111,11 +147,27 @@
     >
       <div class="form-box">
         <el-form :model="formData" label-width="100px">
+          <el-form-item label="服务类型" prop="serviceType">
+            <el-select
+              v-model="formData.serviceType"
+              placeholder="请选择服务类型"
+            >
+              <el-option
+                v-for="item in dictData"
+                :key="item.id"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              ></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="服务标题" required>
             <el-input v-model="formData.title" placeholder="如：游客服务处" />
           </el-form-item>
           <el-form-item label="简短描述">
-            <el-input v-model="formData.shortDesc" placeholder="如：游园咨询一站式" />
+            <el-input
+              v-model="formData.shortDesc"
+              placeholder="如：游园咨询一站式"
+            />
           </el-form-item>
           <el-form-item label="服务图片" required>
             <ImageUpload
@@ -129,6 +181,28 @@
           </el-form-item>
           <el-form-item label="位置" required>
             <el-input v-model="formData.location" placeholder="请输入位置" />
+          </el-form-item>
+          <el-form-item label="收费标准" prop="chargeStandard">
+            <el-input
+              v-model="formData.chargeStandard"
+              placeholder="如：免费 / 20元每小时"
+            />
+          </el-form-item>
+          <el-form-item label="注意事项" prop="notice">
+            <el-input
+              v-model="formData.notice"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入注意事项"
+            />
+          </el-form-item>
+          <el-form-item label="设施介绍" prop="facilityIntroduction">
+            <el-input
+              v-model="formData.facilityIntroduction"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入设施介绍"
+            />
           </el-form-item>
           <el-form-item label="排序" prop="sortOrder">
             <el-input-number
@@ -168,7 +242,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ImageUpload from "../../components/ImageUpload/index.vue";
 import Pagination from "../../components/pagination/pagination.vue";
 import { imageEdit } from "../../utils/utils.js";
-import { serviceSuggestionsApi } from "../../api/index.js";
+import { serviceSuggestionsApi, dictApi } from "../../api/index.js";
 
 const imgUrl = import.meta.env.VITE_IMG_URL;
 
@@ -184,9 +258,13 @@ const formDataInfo = () => ({
   title: "",
   shortDesc: "",
   picture: [],
-  address: "",
-  location: "",
+  address: "不知道",
+  location: "105.123,31.456",
+  chargeStandard: "",
+  notice: "",
+  facilityIntroduction: "",
   sortOrder: 0,
+  serviceType: "",
   status: 1,
 });
 
@@ -201,12 +279,28 @@ const pagination = ref({
 
 // 数据列表
 let tableData = ref([]);
+// 字典数据
+let dictData = ref([]);
 
 // ------------------------函数方法----------------------
 
 onMounted(() => {
   getList();
+  getDictData();
 });
+
+// 获取字典数据
+let getDictData = async () => {
+  let res = await dictApi.getDictDataByType({
+    dictType: "sys_service_category",
+  });
+  if (res.code == 200) {
+    dictData.value = res.data;
+    console.log("字典数据", dictData.value);
+  } else {
+    ElMessage.error(res.message);
+  }
+};
 
 let handleQuery = () => {
   pagination.value.currentPage = 1;
@@ -257,16 +351,22 @@ const handleSubmit = async () => {
   if (!formData.value.location) return ElMessage.warning("请输入位置");
   if (
     !formData.value.picture ||
-    (Array.isArray(formData.value.picture) && formData.value.picture.length === 0)
+    (Array.isArray(formData.value.picture) &&
+      formData.value.picture.length === 0)
   ) {
     return ElMessage.warning("请上传服务图片");
   }
 
-  if (Array.isArray(formData.value.picture) && formData.value.picture.length > 0) {
+  if (
+    Array.isArray(formData.value.picture) &&
+    formData.value.picture.length > 0
+  ) {
     formData.value.picture = imageEdit(formData.value.picture);
   }
 
-  let res = await serviceSuggestionsApi.touristServicesOperation(formData.value);
+  let res = await serviceSuggestionsApi.touristServicesOperation(
+    formData.value,
+  );
   if (res.code == 200) {
     dialogVisible.value = false;
     ElMessage.success(res.message);
@@ -312,9 +412,11 @@ const handleSortChange = async (row) => {
 const handleEdit = (row) => {
   formData.value = {
     ...row,
-    picture: row.picture ? [{ url: imgUrl + row.picture }] : [],
+    // 字典 dictValue 是字符串，serviceType 需转成字符串才能正确回显
+    serviceType: row.serviceType != null ? String(row.serviceType) : "",
     action: "update",
   };
+  console.log("图片", formData.value);
   dialogVisible.value = true;
 };
 

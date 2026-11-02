@@ -44,6 +44,16 @@ const staticRoutes = [
         },
         component: () => import("../view/home/personalCenter.vue"),
       },
+
+      {
+        name: "dictData",
+        path: "/system/dictData",
+        meta: {
+          title: "字典数据",
+          requireLogin: true, //是否需要登录
+        },
+        component: () => import("../view/system/dictData.vue"),
+      },
     ],
   },
   {

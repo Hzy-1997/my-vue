@@ -16,7 +16,8 @@
     </el-upload>
     <div>
       <text style="color: red"> * </text>
-      请上传大小不超过 <text style="color: red">{{ props.maxFileSize }}MB</text> 格式为
+      请上传大小不超过
+      <text style="color: red">{{ props.maxFileSize }}MB</text> 格式为
       <text style="color: red">jpeg,jpg,png</text> 的文件
     </div>
     <el-dialog
@@ -25,7 +26,11 @@
       :close-on-click-modal="true"
       width="80%"
     >
-      <img :src="dialogImageUrl" alt="预览图片" style="width: 100%; height: auto" />
+      <img
+        :src="dialogImageUrl"
+        alt="预览图片"
+        style="width: 100%; height: auto"
+      />
     </el-dialog>
   </div>
 </template>
@@ -75,7 +80,11 @@ const maxSizeInBytes = computed(() => props.maxFileSize * 1024 * 1024);
 // 阿里云OSS基础URL
 const ossBaseUrl = "https://hezhaoyu.oss-cn-hangzhou.aliyuncs.com";
 // 上传接口地址
-const imageUrl = ref(config.baseApi + "/public/uploadImg?category=" + props.category);
+const imageUrl = ref(
+  config.baseApi + "/public/uploadImg?category=" + props.category,
+);
+
+console.log("上传接口地址:", imageUrl);
 
 // 响应式数据
 const fileList = ref([]);
@@ -115,7 +124,9 @@ const normalizeImageData = (value) => {
   const arr = Array.isArray(value) ? value : value.split(",");
   // 过滤空字符串并转换为标准格式
   return arr
-    .filter((item) => (typeof item === "string" ? item.trim().length > 0 : true))
+    .filter((item) =>
+      typeof item === "string" ? item.trim().length > 0 : true,
+    )
     .map((item) => {
       if (typeof item === "string") {
         const fullUrl = ensureFullUrl(item);
@@ -141,7 +152,7 @@ watch(
   {
     deep: true,
     immediate: true,
-  }
+  },
 );
 
 /**
@@ -203,7 +214,7 @@ const beforeUpload = (file) => {
     ElMessage.error(
       `不支持的文件格式，请上传 ${props.fileTypes
         .map((type) => type.split("/")[1].toUpperCase())
-        .join(", ")} 格式的图片`
+        .join(", ")} 格式的图片`,
     );
     return false;
   }
@@ -222,7 +233,11 @@ const beforeUpload = (file) => {
  */
 const handleSuccess = (response, uploadFile) => {
   try {
-    if (response && response.code === 200 && uploadFile?.response?.data?.imgRoute) {
+    if (
+      response &&
+      response.code === 200 &&
+      uploadFile?.response?.data?.imgRoute
+    ) {
       ElMessage.success("图片上传成功");
 
       // 添加新上传的图片到上传列表
@@ -249,7 +264,11 @@ const handleSuccess = (response, uploadFile) => {
  */
 const handleUploadError = (error, uploadFile) => {
   ElMessage.error("上传失败，请重试");
-  emit("error", { type: "upload", error: error.message || "网络错误", file: uploadFile });
+  emit("error", {
+    type: "upload",
+    error: error.message || "网络错误",
+    file: uploadFile,
+  });
 };
 
 /**
@@ -283,12 +302,12 @@ const uploadedSuccessfully = () => {
   width: 100%;
 }
 
-// 当达到上传限制时隐藏上传按钮
+/* // 当达到上传限制时隐藏上传按钮 */
 :deep(.upload-disabled .el-upload--picture-card) {
   display: none;
 }
 
-// 优化预览图样式
+/* // 优化预览图样式 */
 :deep(.el-upload-list__item) {
   overflow: hidden;
 }

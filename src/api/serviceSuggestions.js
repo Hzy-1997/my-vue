@@ -49,3 +49,23 @@ export const getOpinionsFeedbackList = (params) => {
     params,
   });
 };
+
+// ==================== 智能问答 ====================
+
+// 智能问答操作（创建/更新/删除）
+export const questionsAnswersOperation = (data) => {
+  return request({
+    url: "/serviceSuggestions/operationQuestionsAnswers",
+    method: "post",
+    data,
+  });
+};
+
+// 智能问答列表
+export const getQuestionsAnswersList = (params) => {
+  return request({
+    url: "/serviceSuggestions/questionsAnswersList",
+    method: "get",
+    params,
+  });
+};
