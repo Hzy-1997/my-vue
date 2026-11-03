@@ -116,6 +116,7 @@ const personalCenter = () => {
       height: 50px;
       text-align: center;
       line-height: 50px;
+      margin-bottom: 25px;
     }
   }
   .content-right {
