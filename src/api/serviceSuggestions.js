@@ -30,6 +30,26 @@ export const getTouristServicesList = (params) => {
   });
 };
 
+// ==================== 服务设施 ====================
+
+// 服务设施操作（创建/更新/删除）
+export const serviceFacilityOperation = (data) => {
+  return request({
+    url: "/serviceSuggestions/serviceFacilityOperation",
+    method: "post",
+    data,
+  });
+};
+
+// 服务设施列表
+export const getServiceFacilityList = (params) => {
+  return request({
+    url: "/serviceSuggestions/serviceFacilityList",
+    method: "get",
+    params,
+  });
+};
+
 // ==================== 意见建议 ====================
 
 // 意见反馈操作（更新/删除）
