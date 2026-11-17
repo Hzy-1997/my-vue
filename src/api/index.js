@@ -26,6 +26,7 @@ import * as comboApi from './comboApi';
 import * as appointmentApi from './appointment';
 import * as serviceSuggestionsApi from './serviceSuggestions';
 import * as dictApi from './dict';
+import * as contactPhoneApi from './contactPhone';
 
 
 
@@ -48,5 +49,6 @@ export {
     comboApi,
     appointmentApi,
     serviceSuggestionsApi,
-    dictApi
+    dictApi,
+    contactPhoneApi
 };
