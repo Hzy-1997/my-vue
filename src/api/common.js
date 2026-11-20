@@ -11,7 +11,7 @@ import { request } from "../utils/request.js";
 
 
 // 图片上传
-export const uploadImg = (data) => {
+export const uploadImg = (data, category) => {
     return request({
         url: "/public/uploadImg",
         method: "post",

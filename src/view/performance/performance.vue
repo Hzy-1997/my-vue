@@ -6,7 +6,7 @@
       <div class="title">演出管理</div>
       <div class="query-item">
         <el-input
-          v-model="queryForm.name"
+          v-model="queryForm.title"
           placeholder="请输入演出名称"
           style="width: 200px"
         />
@@ -24,47 +24,38 @@
       </div>
     </div>
 
-    <el-alert
-      class="demo-tip"
-      title="当前为演示数据（接口暂未接入），仅用于预览页面样式与交互"
-      type="info"
-      show-icon
-      :closable="false"
-    />
-
     <div class="base-table">
       <div class="action">
         <el-button type="primary" @click="handleCreate">新增演出</el-button>
       </div>
 
       <!-- 演出列表（对应 performances 表） -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" height="calc(100vh - 255px)" style="width: 100%">
         <el-table-column prop="id" label="ID" width="60" align="center" />
         <el-table-column label="封面" width="90" align="center">
           <template #default="{ row }">
-            <img :src="row.coverImage" class="table-img" v-if="row.coverImage" />
+            <img
+              :src="coverSrc(row.coverImage)"
+              class="table-img"
+              v-if="row.coverImage && row.coverImage.length"
+            />
             <span v-else class="no-img">暂无</span>
           </template>
         </el-table-column>
-        <el-table-column label="演出名称" min-width="180">
+        <el-table-column label="演出名称" width="220">
           <template #default="{ row }">
-            <div class="perf-name">{{ row.name }}</div>
+            <div class="perf-name">{{ row.title }}</div>
             <div class="perf-sub">{{ row.subtitle }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="演出类型" min-width="120">
+        <el-table-column label="演出类型" min-width="110" align="center">
           <template #default="{ row }">
-            <el-tag
-              v-for="t in row.performanceTypes"
-              :key="t"
-              size="small"
-              effect="plain"
-              class="mini-tag"
-              >{{ t }}</el-tag
-            >
+            <el-tag size="small" effect="plain">{{
+              performanceTypeName[row.performanceTypes] || "-"
+            }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="内容标签" min-width="120">
+        <el-table-column label="内容标签" min-width="100">
           <template #default="{ row }">
             <el-tag
               v-for="t in row.tags"
@@ -94,7 +85,7 @@
             <el-rate :model-value="row.recommendIndex" disabled size="small" />
           </template>
         </el-table-column>
-        <el-table-column label="场次" width="70" align="center">
+        <el-table-column label="场次" width="100" align="center">
           <template #default="{ row }">{{ scheduleCountOf(row.id) }}场/周</template>
         </el-table-column>
         <el-table-column label="状态" width="90" align="center">
@@ -107,14 +98,13 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="110" align="center">
+        <el-table-column label="排序" width="180" align="center">
           <template #default="{ row }">
             <el-input-number
               v-model="row.sort"
               :min="0"
               :max="9999"
-              size="small"
-              @change="handleSortChange(row)"
+              @change="(val, oldVal) => handleSortChange(row, oldVal)"
             />
           </template>
         </el-table-column>
@@ -132,213 +122,200 @@
       </el-table>
     </div>
 
+    <Pagination :pagination="pagination" @handleCurrentChange="handleCurrentChange" />
+
     <!-- 新增/编辑演出 -->
     <el-dialog
       v-model="dialogVisible"
       :title="formData.action === 'create' ? '新增演出' : '编辑演出'"
-      width="780px"
+      width="950px"
       :close-on-click-modal="false"
       destroy-on-close
     >
-      <el-form :model="formData" label-width="100px">
-        <el-divider content-position="left">基本信息</el-divider>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="演出名称" required>
-              <el-input v-model="formData.name" placeholder="请输入演出名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="副标题">
-              <el-input v-model="formData.subtitle" placeholder="副标题/卖点" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="导语">
-              <el-input v-model="formData.guide" placeholder="一句话导语" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="适合人群">
-              <el-select
-                v-model="formData.suitableCrowd"
-                multiple
-                filterable
-                allow-create
-                default-first-option
-                placeholder="输入后回车，如：亲子家庭"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="演出类型">
-              <el-select
-                v-model="formData.performanceTypes"
-                multiple
-                filterable
-                allow-create
-                default-first-option
-                placeholder="输入后回车，如：动物互动"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="内容标签">
-              <el-select
-                v-model="formData.tags"
-                multiple
-                filterable
-                allow-create
-                default-first-option
-                placeholder="输入后回车，如：亲子"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="可容纳人数">
-              <el-input-number
-                v-model="formData.capacity"
-                :min="0"
-                :max="999999"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否预约">
-              <el-switch
-                v-model="formData.isReservationRequired"
-                active-text="需预约"
-                inactive-text="免预约"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="推荐指数">
-              <el-rate v-model="formData.recommendIndex" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-switch
-                v-model="formData.status"
-                :active-value="1"
-                :inactive-value="2"
-                active-text="正常"
-                inactive-text="停用"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-divider content-position="left">演出安排</el-divider>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="表演时长">
-              <el-input v-model="formData.duration" placeholder="如：30分钟" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="适合年龄">
-              <el-input v-model="formData.suitableAge" placeholder="如：3岁以上" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="经纬度" required>
-              <el-input v-model="formData.coordinates" placeholder="如：113.512,23.207" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="位置描述">
-              <el-input
-                v-model="formData.locationDesc"
-                placeholder="如：丛林剧场（园区东侧）"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-divider content-position="left">图文媒体</el-divider>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="封面图片">
-              <el-input
-                v-model="formData.coverImage"
-                placeholder="封面图片路径（接入后换上传组件）"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="音频文件">
-              <el-input v-model="formData.audioUrl" placeholder="音频文件路径" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="视频文件">
-              <el-input v-model="formData.videoUrl" placeholder="视频文件路径" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="轮播图">
-              <el-input
-                v-model="carouselInput"
-                placeholder="输入图片路径后回车添加"
-                @keyup.enter="addCarousel"
-              />
-              <div class="carousel-tags" v-if="formData.carouselImages.length">
-                <el-tag
-                  v-for="(img, i) in formData.carouselImages"
-                  :key="i"
-                  closable
-                  @close="formData.carouselImages.splice(i, 1)"
-                  >图{{ i + 1 }}</el-tag
+      <div class="dialog-scroll">
+        <el-form :model="formData" label-width="100px">
+          <el-divider content-position="left">基本信息</el-divider>
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="演出名称" required>
+                <el-input v-model="formData.title" placeholder="请输入演出名称" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="副标题">
+                <el-input v-model="formData.subtitle" placeholder="副标题/卖点" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="导语">
+                <el-input v-model="formData.guide" placeholder="一句话导语" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="适合人群">
+                <el-select
+                  v-model="formData.suitableCrowd"
+                  multiple
+                  filterable
+                  allow-create
+                  default-first-option
+                  placeholder="输入后回车，如：亲子家庭"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="演出类型">
+                <el-select
+                  v-model="formData.performanceTypes"
+                  placeholder="请选择演出类型"
+                  style="width: 100%"
                 >
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="演艺介绍">
-              <el-input
-                v-model="formData.introduction"
-                type="textarea"
-                :rows="3"
-                placeholder="演艺介绍"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="注意事项">
-              <el-input
-                v-model="formData.notice"
-                type="textarea"
-                :rows="3"
-                placeholder="注意事项"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+                  <el-option label="常规演出" :value="1" />
+                  <el-option label="互动演出" :value="2" />
+                  <el-option label="特别演出" :value="3" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="内容标签">
+                <el-select
+                  v-model="formData.tags"
+                  multiple
+                  filterable
+                  allow-create
+                  default-first-option
+                  placeholder="输入后回车，如：亲子"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="可容纳人数">
+                <el-input-number
+                  v-model="formData.capacity"
+                  :min="0"
+                  :max="999999"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="是否预约">
+                <el-switch
+                  v-model="formData.isReservationRequired"
+                  active-text="需预约"
+                  inactive-text="免预约"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="推荐指数">
+                <el-rate v-model="formData.recommendIndex" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="状态">
+                <el-switch
+                  v-model="formData.status"
+                  :active-value="1"
+                  :inactive-value="2"
+                  active-text="正常"
+                  inactive-text="停用"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-        <el-row :gutter="16">
-          <el-col :span="8">
-            <el-form-item label="排序权重">
-              <el-input-number v-model="formData.sort" :min="0" :max="9999" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="智能推荐">
-              <el-switch v-model="formData.isSmartRecommended" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="热点点位">
-              <el-switch v-model="formData.isHotSpot" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+          <el-divider content-position="left">演出安排</el-divider>
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="表演时长">
+                <el-input v-model="formData.duration" placeholder="如：30分钟" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="适合年龄">
+                <el-input v-model="formData.suitableAge" placeholder="如：3岁以上" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="经纬度" required>
+                <el-input
+                  v-model="formData.coordinates"
+                  placeholder="如：113.512,23.207"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="位置描述">
+                <el-input
+                  v-model="formData.locationDesc"
+                  placeholder="如：丛林剧场（园区东侧）"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-divider content-position="left">图文媒体</el-divider>
+          <el-form-item label="封面图片">
+            <ImageUpload
+              :limit="1"
+              category="performance"
+              v-model="formData.coverImage"
+            />
+          </el-form-item>
+          <el-form-item label="轮播图">
+            <ImageUpload
+              :limit="3"
+              category="performance"
+              v-model="formData.carouselImages"
+            />
+          </el-form-item>
+          <el-form-item label="音频文件">
+            <el-input v-model="formData.audioUrl" placeholder="音频文件路径" />
+          </el-form-item>
+          <el-form-item label="视频文件">
+            <el-input v-model="formData.videoUrl" placeholder="视频文件路径" />
+          </el-form-item>
+          <el-form-item label="演艺介绍">
+            <RichTextEditor
+              v-model="formData.introduction"
+              :uploadImageConfig="{
+                customUpload: handleImageUpload,
+              }"
+              :mode="editMode"
+              @content-change="handleContentChange"
+            />
+          </el-form-item>
+          <el-form-item label="注意事项">
+            <el-input
+              v-model="formData.notice"
+              type="textarea"
+              :rows="3"
+              placeholder="注意事项"
+            />
+          </el-form-item>
+
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <el-form-item label="排序权重">
+                <el-input-number v-model="formData.sort" :min="0" :max="9999" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="智能推荐">
+                <el-switch v-model="formData.isSmartRecommended" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="热点点位">
+                <el-switch v-model="formData.isHotSpot" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
@@ -348,7 +325,7 @@
     <!-- 场次管理抽屉 -->
     <el-drawer
       v-model="scheduleDrawer"
-      :title="`场次管理 - ${schedulePerf?.name || ''}`"
+      :title="`场次管理 - ${schedulePerf?.title || ''}`"
       size="75%"
       :close-on-click-modal="false"
     >
@@ -357,7 +334,7 @@
           <el-button type="primary" @click="openBatchDialog">批量添加场次</el-button>
           <span class="tips"
             >每周共 {{ drawerSchedules.length }} 场；单场容量留空时使用演出总容量（{{
-              schedulePerf.capacity
+              schedulePerf.capacity ?? "未设置"
             }}）</span
           >
         </div>
@@ -579,148 +556,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-
-/*
- * ==================== 演示数据（接口待接入） ====================
- * TODO: 接口就绪后替换为 performanceApi.xxx
- */
-const IMG = (prompt) =>
-  `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(
-    prompt
-  )}&image_size=square_hd`;
-
-// 演出列表（对应 performances 表）
-const performances = ref([
-  {
-    id: 1,
-    name: "丛林飞鸟秀",
-    subtitle: "百鸟齐飞震撼开场",
-    guide: "人与自然的亲密对话",
-    performanceTypes: ["动物互动"],
-    tags: ["亲子", "鸟类"],
-    suitableCrowd: ["亲子家庭"],
-    capacity: 500,
-    isReservationRequired: true,
-    recommendIndex: 5,
-    duration: "30分钟",
-    suitableAge: "3岁以上",
-    coordinates: "113.512,23.207",
-    locationDesc: "丛林剧场（园区东侧）",
-    coverImage: IMG(
-      " Tropical jungle stage performance with colorful flying exotic birds, scenic park theater, vivid, photorealistic "
-    ),
-    audioUrl: "",
-    videoUrl: "",
-    carouselImages: [],
-    introduction: "数百只珍稀鸟类与训练师联袂呈现的视听盛宴。",
-    notice: "演出期间请勿使用闪光灯，请勿投喂动物。",
-    status: 1,
-    sort: 1,
-    isSmartRecommended: true,
-    isHotSpot: true,
-  },
-  {
-    id: 2,
-    name: "夜光花车巡游",
-    subtitle: "夜幕下的流光溢彩",
-    guide: "提灯夜游，梦幻巡礼",
-    performanceTypes: ["巡游"],
-    tags: ["夜游", "灯光"],
-    suitableCrowd: ["全年龄"],
-    capacity: 800,
-    isReservationRequired: false,
-    recommendIndex: 4,
-    duration: "45分钟",
-    suitableAge: "不限",
-    coordinates: "113.508,23.210",
-    locationDesc: "园区主环路",
-    coverImage: IMG(
-      "Nighttime illuminated parade float with glowing lanterns and lights in a scenic park, festive, photorealistic"
-    ),
-    audioUrl: "",
-    videoUrl: "",
-    carouselImages: [],
-    introduction: "华灯初上，流光花车沿主环路缓缓行进。",
-    notice: "巡游期间请注意脚下安全，站在警戒线外观演。",
-    status: 1,
-    sort: 2,
-    isSmartRecommended: false,
-    isHotSpot: true,
-  },
-  {
-    id: 3,
-    name: "海豚湾欢歌",
-    subtitle: "海洋精灵的欢乐派对",
-    guide: "与海豚共舞",
-    performanceTypes: ["动物互动", "水上表演"],
-    tags: ["海豚", "欢乐"],
-    suitableCrowd: ["亲子家庭", "情侣"],
-    capacity: 300,
-    isReservationRequired: true,
-    recommendIndex: 5,
-    duration: "25分钟",
-    suitableAge: "全年龄",
-    coordinates: "113.515,23.204",
-    locationDesc: "海豚湾剧场（园区北侧）",
-    coverImage: IMG(
-      "Dolphins jumping in a blue ocean theater pool with splashing water, scenic park, sunny day, photorealistic"
-    ),
-    audioUrl: "",
-    videoUrl: "",
-    carouselImages: [],
-    introduction: "聪明伶俐的海豚明星带来跳跃、顶球等精彩表演。",
-    notice: "前排观众可能被水花打湿，可自备雨衣。",
-    status: 2,
-    sort: 3,
-    isSmartRecommended: false,
-    isHotSpot: false,
-  },
-]);
-
-// 场次（对应 performance_schedules 表：weekDay + showTime 一行一场）
-let seedId = 0;
-const make = (performanceId, weekDays, times, capacity = null, status = 1) =>
-  weekDays.flatMap((d) =>
-    times.map((t) => ({
-      id: ++seedId,
-      performanceId,
-      weekDay: d,
-      showTime: t,
-      capacity,
-      status,
-    }))
-  );
-
-const schedules = ref([
-  ...make(1, [1, 3, 5], ["09:00", "10:00", "11:00", "12:00"]), // 一三五上午
-  ...make(2, [0, 6], ["10:00", "15:00"], 300), // 仅周末
-  ...make(
-    3,
-    [0, 1, 2, 3, 4, 5, 6],
-    [
-      "09:00",
-      "10:00",
-      "11:00",
-      "12:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-      "17:00",
-      "18:00",
-    ]
-  ), // 每天十场
-  {
-    id: ++seedId,
-    performanceId: 2,
-    weekDay: 0,
-    showTime: "16:30",
-    capacity: null,
-    status: 2,
-  }, // 演示停用状态
-]);
+import ImageUpload from "../../components/ImageUpload/index.vue";
+import RichTextEditor from "../../components/editor/index.vue";
+import Pagination from "../../components/pagination/pagination.vue";
+import { commonApi, performanceApi } from "../../api/index.js";
+import { imageEdit } from "../../utils/utils.js";
+// 全部场次（列表页统计"场次/周"，抽屉内按演出过滤）
+const schedules = ref([]);
 
 // ==================== 常量 ====================
 const weekOrder = [1, 2, 3, 4, 5, 6, 0];
@@ -733,6 +577,12 @@ const weekName = {
   5: "周五",
   6: "周六",
 };
+// 演出类型 1:常规演出 2:互动演出 3:特别演出
+const performanceTypeName = {
+  1: "常规演出",
+  2: "互动演出",
+  3: "特别演出",
+};
 const quickWeeks = [
   { label: "每天", days: [0, 1, 2, 3, 4, 5, 6] },
   { label: "工作日", days: [1, 2, 3, 4, 5] },
@@ -742,53 +592,114 @@ const intervalOptions = [30, 45, 60, 90, 120];
 const todayWeekDay = new Date().getDay();
 
 // ==================== 演出列表 ====================
-const queryForm = ref({ name: "", status: null });
-
-const tableData = computed(() =>
-  performances.value.filter(
-    (p) =>
-      (!queryForm.value.name || p.name.includes(queryForm.value.name)) &&
-      (!queryForm.value.status || p.status === queryForm.value.status)
-  )
-);
-
-const handleQuery = () => {};
-const handleReset = () => {
-  queryForm.value = { name: "", status: null };
-};
+const queryForm = ref({ title: "", status: null });
+const tableData = ref([]);
+const pagination = ref({ total: 0, pageSize: 10, currentPage: 1 });
 
 const scheduleCountOf = (perfId) =>
   schedules.value.filter((s) => s.performanceId === perfId).length;
 
-// TODO: 接口就绪后替换为 performanceApi.updatePerformance
-const handleStatusChange = (row) => {
-  ElMessage.success(`已${row.status === 1 ? "启用" : "停用"}「${row.name}」（演示）`);
+// 获取演出列表
+const getPerformanceList = async () => {
+  let res = await performanceApi.getPerformanceList({
+    ...queryForm.value,
+    page: pagination.value.currentPage,
+    pageSize: pagination.value.pageSize,
+  });
+  if (res.code == 200) {
+    tableData.value = res.data.rows;
+    pagination.value.total = res.data.count;
+  } else {
+    ElMessage.error(res.message);
+  }
 };
-const handleSortChange = (row) => {
-  ElMessage.success(`「${row.name}」排序已更新（演示）`);
+
+// 获取场次列表
+const getScheduleList = async () => {
+  let res = await performanceApi.getPerformanceScheduleList();
+  if (res.code == 200) {
+    schedules.value = res.data.rows;
+  } else {
+    ElMessage.error(res.message);
+  }
+};
+
+onMounted(() => {
+  getPerformanceList();
+  getScheduleList();
+});
+
+const handleQuery = () => {
+  pagination.value.currentPage = 1;
+  getPerformanceList();
+};
+const handleReset = () => {
+  queryForm.value = { title: "", status: null };
+  pagination.value.currentPage = 1;
+  getPerformanceList();
+};
+
+const handleCurrentChange = (val) => {
+  pagination.value.currentPage = val;
+  getPerformanceList();
+};
+
+// 修改状态（失败回滚开关）
+const handleStatusChange = async (row) => {
+  let res = await performanceApi.operatePerformance({ ...row, action: "update" });
+  if (res.code == 200) {
+    ElMessage.success(`已${row.status === 1 ? "启用" : "停用"}「${row.title}」`);
+  } else {
+    row.status = row.status === 1 ? 2 : 1;
+    ElMessage.error(res.message);
+  }
+};
+
+// 修改排序（失败回滚）
+const handleSortChange = async (row, oldVal) => {
+  let res = await performanceApi.operatePerformance({ ...row, action: "update" });
+  if (res.code == 200) {
+    ElMessage.success(`「${row.title}」排序已更新`);
+  } else {
+    row.sort = oldVal;
+    ElMessage.error(res.message);
+  }
 };
 
 // ---- 新增/编辑 ----
 const dialogVisible = ref(false);
-const carouselInput = ref("");
+
+// 图片CDN地址（上传后的图片存相对路径，展示时需拼接）
+const imgUrl = import.meta.env.VITE_IMG_URL;
+const coverSrc = (path) => (path.startsWith("http") ? path : imgUrl + path);
+
+// 编辑器模式
+const editMode = ref("edit");
+// 编辑器本次会话上传的图片（提交时用于清理已删除的图片）
+const initialImages = ref([]);
+// 编辑器当前保留的图片
+const retainedImages = ref([]);
+
+// JSON数组字段兜底转换（适合人群/内容标签）
+const toArray = (v) => (Array.isArray(v) ? v : v ? String(v).split(",") : []);
 
 const formDataInfo = () => ({
   action: "create",
   id: null,
-  name: "",
+  title: "",
   subtitle: "",
   guide: "",
   suitableCrowd: [],
-  performanceTypes: [],
+  performanceTypes: 1,
   tags: [],
-  capacity: 0,
+  capacity: null,
   isReservationRequired: false,
   recommendIndex: 3,
   duration: "",
   suitableAge: "",
   coordinates: "",
   locationDesc: "",
-  coverImage: "",
+  coverImage: [],
   audioUrl: "",
   videoUrl: "",
   carouselImages: [],
@@ -801,55 +712,114 @@ const formDataInfo = () => ({
 });
 const formData = ref(formDataInfo());
 
+const resetEditorImages = () => {
+  initialImages.value = [];
+  retainedImages.value = [];
+};
+
 const handleCreate = () => {
   formData.value = formDataInfo();
+  resetEditorImages();
   dialogVisible.value = true;
 };
 const handleEdit = (row) => {
   formData.value = {
     ...formDataInfo(),
     ...JSON.parse(JSON.stringify(row)),
+    suitableCrowd: toArray(row.suitableCrowd),
+    tags: toArray(row.tags),
     action: "update",
   };
+  resetEditorImages();
   dialogVisible.value = true;
 };
 
-const addCarousel = () => {
-  const v = carouselInput.value.trim();
-  if (v) {
-    formData.value.carouselImages.push(v);
-    carouselInput.value = "";
+// 处理编辑器图片上传
+const handleImageUpload = async (file, insertFn) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  try {
+    const res = await commonApi.uploadImg(fd, "performance");
+    if (res.code !== 200) {
+      ElMessage.error("上传失败: " + res.message);
+      return;
+    }
+    initialImages.value.push(res.data.file.url);
+    insertFn(res.data.file.url, "");
+  } catch (error) {
+    ElMessage.error("上传图片失败，请重试");
   }
 };
 
-// TODO: 接口就绪后替换为 performanceApi.operatePerformance
-const handleSubmit = () => {
-  if (!formData.value.name) return ElMessage.warning("请输入演出名称");
+// 编辑器内容变化
+const handleContentChange = (data) => {
+  formData.value.introduction = data.content;
+  retainedImages.value = data.editorImgList;
+};
+
+// 提交（新增/更新）
+const handleSubmit = async () => {
+  if (!formData.value.title) return ElMessage.warning("请输入演出名称");
   if (!formData.value.coordinates) return ElMessage.warning("请输入经纬度");
-  if (formData.value.action === "create") {
-    formData.value.id = ++seedId + 1000;
-    performances.value.push(JSON.parse(JSON.stringify(formData.value)));
-    ElMessage.success("新增成功（演示）");
-  } else {
-    const row = performances.value.find((p) => p.id === formData.value.id);
-    Object.assign(row, formData.value);
-    ElMessage.success("保存成功（演示）");
+
+  // 清理编辑器中已删除的图片
+  if (Array.isArray(initialImages.value) && initialImages.value.length > 0) {
+    let deleteImageList = initialImages.value.filter(
+      (item1) => !retainedImages.value.some((item2) => item1 === item2.src)
+    );
+    if (deleteImageList.length > 0) {
+      deleteImageList = deleteImageList.map((url) => {
+        const match = url.match(/\/ceshiUp\/\d+\/\d+\/\d+\/[a-f0-9]+\.[a-z0-9]+/i);
+        return match ? match[0].slice(1) : "";
+      });
+      await commonApi.deleteImg({ deleteImageList });
+    }
   }
-  dialogVisible.value = false;
+
+  // 封面/轮播图数组转逗号分隔路径字符串（与票务提交格式一致）
+  // coverImage 为 STRING 字段：空数组也必须转为空字符串，否则 Sequelize 报 string violation
+  if (Array.isArray(formData.value.coverImage)) {
+    formData.value.coverImage = imageEdit(formData.value.coverImage);
+  }
+  if (
+    Array.isArray(formData.value.carouselImages) &&
+    formData.value.carouselImages.length > 0
+  ) {
+    formData.value.carouselImages = imageEdit(formData.value.carouselImages);
+  }
+
+  let res = await performanceApi.operatePerformance({
+    ...formData.value,
+  });
+  if (res.code == 200) {
+    ElMessage.success(res.message);
+    dialogVisible.value = false;
+    getPerformanceList();
+  } else {
+    ElMessage.error(res.message);
+  }
 };
 
-// TODO: 接口就绪后替换为 performanceApi.deletePerformance（后端配置了场次级联删除）
+// 删除演出（后端级联删除其场次）
 const handleDelete = (row) => {
   const cnt = scheduleCountOf(row.id);
   ElMessageBox.confirm(
-    `此操作将永久删除「${row.name}」${cnt ? `及其 ${cnt} 个场次` : ""}, 是否继续?`,
+    `此操作将永久删除「${row.title}」${cnt ? `及其 ${cnt} 个场次` : ""}, 是否继续?`,
     "提示",
     { confirmButtonText: "确定", cancelButtonText: "取消", type: "warning" }
   )
-    .then(() => {
-      performances.value = performances.value.filter((p) => p.id !== row.id);
-      schedules.value = schedules.value.filter((s) => s.performanceId !== row.id);
-      ElMessage.success("已删除（演示）");
+    .then(async () => {
+      let res = await performanceApi.operatePerformance({
+        action: "delete",
+        id: row.id,
+      });
+      if (res.code == 200) {
+        ElMessage.success(res.message);
+        getPerformanceList();
+        getScheduleList();
+      } else {
+        ElMessage.error(res.message);
+      }
     })
     .catch(() => {});
 };
@@ -858,9 +828,10 @@ const handleDelete = (row) => {
 const scheduleDrawer = ref(false);
 const schedulePerf = ref(null);
 
-const openScheduleDrawer = (row) => {
+const openScheduleDrawer = async (row) => {
   schedulePerf.value = row;
   scheduleDrawer.value = true;
+  await getScheduleList(); // 打开时拉取最新场次
 };
 
 const drawerSchedules = computed(() =>
@@ -952,32 +923,30 @@ const removeTime = (t) => {
   previewTimes.value = previewTimes.value.filter((x) => x !== t);
 };
 
-// TODO: 接口就绪后替换为 performanceApi.batchCreateSchedule
-const handleBatchSubmit = () => {
+// 批量添加提交（后端自动跳过与已有场次重复的星期+时间）
+const handleBatchSubmit = async () => {
   const { weekDays, capacity } = batchForm.value;
   if (!weekDays.length) return ElMessage.warning("请选择星期");
   if (!previewTimes.value.length) return ElMessage.warning("请生成或添加时间点");
 
-  const exist = new Set(drawerSchedules.value.map((s) => `${s.weekDay}-${s.showTime}`));
-  let added = 0;
-  weekDays.forEach((d) => {
-    previewTimes.value.forEach((t) => {
-      if (!exist.has(`${d}-${t}`)) {
-        schedules.value.push({
-          id: ++seedId + 1000,
-          performanceId: schedulePerf.value.id,
-          weekDay: d,
-          showTime: t,
-          capacity: capacity ?? null,
-          status: 1,
-        });
-        added++;
-      }
-    });
+  let res = await performanceApi.operatePerformanceSchedule({
+    action: "batchCreate",
+    performanceId: schedulePerf.value.id,
+    schedules: batchWeekTimes.value.map((x) => ({
+      weekDay: x.weekDay,
+      showTime: x.showTime,
+      capacity: capacity ?? null,
+      status: 1,
+    })),
   });
-  const skipped = batchWeekTimes.value.length - added;
-  ElMessage.success(`已添加 ${added} 场${skipped ? `，跳过重复 ${skipped} 场` : ""}`);
-  batchVisible.value = false;
+  if (res.code == 200) {
+    const { added, skipped } = res.data;
+    ElMessage.success(`已添加 ${added} 场${skipped ? `，跳过重复 ${skipped} 场` : ""}`);
+    batchVisible.value = false;
+    getScheduleList();
+  } else {
+    ElMessage.error(res.message);
+  }
 };
 
 // ---- 编辑/删除单场 ----
@@ -989,60 +958,80 @@ const openEdit = (row) => {
   editVisible.value = true;
 };
 
-// TODO: 接口就绪后替换为 performanceApi.updateSchedule
-const handleEditSubmit = () => {
-  const row = schedules.value.find((s) => s.id === editForm.value.id);
-  if (!row) return;
+const handleEditSubmit = async () => {
+  const { id, weekDay, showTime, capacity, status } = editForm.value;
   const dup = drawerSchedules.value.find(
-    (s) =>
-      s.id !== row.id &&
-      s.weekDay === editForm.value.weekDay &&
-      s.showTime === editForm.value.showTime
+    (s) => s.id !== id && s.weekDay === weekDay && s.showTime === showTime
   );
   if (dup) return ElMessage.warning("该星期此时间已存在场次");
-  Object.assign(row, {
-    showTime: editForm.value.showTime,
-    capacity: editForm.value.capacity ?? null,
-    status: editForm.value.status,
+
+  let res = await performanceApi.operatePerformanceSchedule({
+    action: "update",
+    id,
+    showTime,
+    capacity: capacity ?? null,
+    status,
   });
-  ElMessage.success("已保存（演示）");
-  editVisible.value = false;
+  if (res.code == 200) {
+    ElMessage.success(res.message);
+    editVisible.value = false;
+    getScheduleList();
+  } else {
+    ElMessage.error(res.message);
+  }
 };
 
-// TODO: 接口就绪后替换为 performanceApi.deleteSchedule
 const handleDeleteSchedule = (row) => {
   ElMessageBox.confirm(
     `确定删除 ${weekName[row.weekDay]} ${row.showTime} 这一场吗？`,
     "提示",
     { confirmButtonText: "确定", cancelButtonText: "取消", type: "warning" }
   )
-    .then(() => {
-      schedules.value = schedules.value.filter((s) => s.id !== row.id);
-      ElMessage.success("已删除（演示）");
+    .then(async () => {
+      let res = await performanceApi.operatePerformanceSchedule({
+        action: "delete",
+        id: row.id,
+      });
+      if (res.code == 200) {
+        ElMessage.success(res.message);
+        getScheduleList();
+      } else {
+        ElMessage.error(res.message);
+      }
     })
     .catch(() => {});
 };
 
-// TODO: 接口就绪后替换为批量删除接口
+// 清空某星期的全部场次
 const handleClearDay = (d) => {
   ElMessageBox.confirm(`确定清空 ${weekName[d]} 的全部场次吗？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
   })
-    .then(() => {
-      schedules.value = schedules.value.filter(
-        (s) => !(s.performanceId === schedulePerf.value.id && s.weekDay === d)
-      );
-      ElMessage.success("已清空（演示）");
+    .then(async () => {
+      let res = await performanceApi.operatePerformanceSchedule({
+        action: "clearDay",
+        performanceId: schedulePerf.value.id,
+        weekDay: d,
+      });
+      if (res.code == 200) {
+        ElMessage.success(res.message);
+        getScheduleList();
+      } else {
+        ElMessage.error(res.message);
+      }
     })
     .catch(() => {});
 };
 </script>
 
 <style lang="scss" scoped>
-.demo-tip {
-  margin: 10px 0;
+// 弹窗内容内部滚动，避免页面滚动
+.dialog-scroll {
+  max-height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .mini-tag {
@@ -1062,13 +1051,6 @@ const handleClearDay = (d) => {
 .no-img {
   color: #c0c4cc;
   font-size: 12px;
-}
-
-.carousel-tags {
-  margin-top: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
 }
 
 .drawer-body {

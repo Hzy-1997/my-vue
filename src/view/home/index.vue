@@ -111,12 +111,21 @@ const personalCenter = () => {
     background-color: #001529;
     color: white;
     overflow-y: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     transition: width 0.5s ease;
     .logo {
-      height: 50px;
+      // 吸顶：菜单滚动时标题固定在顶部，背景色与侧边栏一致以遮挡滚上来的菜单
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: #001529;
+      // 50px 标题行 + 原 25px 留白并入吸顶块，避免菜单内容从留白处穿过
+      height: 75px;
       text-align: center;
       line-height: 50px;
-      margin-bottom: 25px;
     }
   }
   .content-right {

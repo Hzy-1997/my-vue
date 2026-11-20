@@ -27,6 +27,7 @@ import * as appointmentApi from './appointment';
 import * as serviceSuggestionsApi from './serviceSuggestions';
 import * as dictApi from './dict';
 import * as contactPhoneApi from './contactPhone';
+import * as performanceApi from './performance';
 
 
 
@@ -50,5 +51,6 @@ export {
     appointmentApi,
     serviceSuggestionsApi,
     dictApi,
-    contactPhoneApi
+    contactPhoneApi,
+    performanceApi
 };
