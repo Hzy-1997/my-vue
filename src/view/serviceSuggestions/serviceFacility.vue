@@ -89,7 +89,7 @@
       </el-table>
     </div>
 
-    <!-- 分页 -->
+    <!-- 分页管理 -->
     <Pagination
       :pagination="pagination"
       @handleSizeChange="handleSizeChange"
