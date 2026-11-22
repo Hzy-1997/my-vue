@@ -30,6 +30,26 @@ export const getTouristServicesList = (params) => {
   });
 };
 
+// ==================== 服务设施 ====================
+
+// 服务设施操作（创建/更新/删除）
+export const serviceFacilityOperation = (data) => {
+  return request({
+    url: "/serviceSuggestions/serviceFacilityOperation",
+    method: "post",
+    data,
+  });
+};
+
+// 服务设施列表
+export const getServiceFacilityList = (params) => {
+  return request({
+    url: "/serviceSuggestions/serviceFacilityList",
+    method: "get",
+    params,
+  });
+};
+
 // ==================== 意见建议 ====================
 
 // 意见反馈操作（更新/删除）
@@ -45,6 +65,26 @@ export const opinionsFeedbackOperation = (data) => {
 export const getOpinionsFeedbackList = (params) => {
   return request({
     url: "/serviceSuggestions/opinionsFeedbackList",
+    method: "get",
+    params,
+  });
+};
+
+// ==================== 智能问答 ====================
+
+// 智能问答操作（创建/更新/删除）
+export const questionsAnswersOperation = (data) => {
+  return request({
+    url: "/serviceSuggestions/operationQuestionsAnswers",
+    method: "post",
+    data,
+  });
+};
+
+// 智能问答列表
+export const getQuestionsAnswersList = (params) => {
+  return request({
+    url: "/serviceSuggestions/questionsAnswersList",
     method: "get",
     params,
   });

@@ -771,12 +771,11 @@ const handleSubmit = async () => {
     }
   }
   console.log(createForm.value);
-  // 轮播图处理
-
-  if (Array.isArray(createForm.value.homeImg) && createForm.value.homeImg.length > 0) {
+  // 轮播图处理（STRING 字段：空数组也必须转为空字符串，否则 Sequelize 报 string violation）
+  if (Array.isArray(createForm.value.homeImg)) {
     createForm.value.homeImg = imageEdit(createForm.value.homeImg);
   }
-  if (Array.isArray(createForm.value.banners) && createForm.value.banners.length > 0) {
+  if (Array.isArray(createForm.value.banners)) {
     createForm.value.banners = imageEdit(createForm.value.banners);
   }
 

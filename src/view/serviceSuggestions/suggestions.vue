@@ -120,7 +120,7 @@
       <div class="form-box">
         <el-descriptions :column="3" border>
           <el-descriptions-item label="用户ID">{{
-            detailRow.openld
+            detailRow.openId
           }}</el-descriptions-item>
           <el-descriptions-item label="用户名">{{
             detailRow.userNmae || "-"
@@ -232,7 +232,7 @@ const resolveImg = (url) => {
 
 let queryForm = ref({
   content: "",
-  openld: "",
+  openId: "",
   type: null,
   isHandle: null,
 });
@@ -263,7 +263,7 @@ let handleQuery = () => {
 };
 
 let handleReset = () => {
-  queryForm.value = { content: "", openld: "", type: null, isHandle: null };
+  queryForm.value = { content: "", openId: "", type: null, isHandle: null };
   pagination.value.currentPage = 1;
   getList();
 };

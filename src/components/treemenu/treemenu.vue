@@ -37,7 +37,7 @@
         <el-menu-item
           v-for="value in item.children"
           :key="value.id"
-          :index="String(value.path)"
+          :index="'/' + String(value.path).replace(/^\//, '')"
         >
           {{ value.menuName }}</el-menu-item
         >
@@ -66,22 +66,25 @@ const props = defineProps({
 });
 
 // 正确设置activeIndex - 主页和欢迎页都高亮主页菜单
-let activeIndex = ref(route.path === "/" || route.path === "/welcome" ? "/" : route.path.substring(1));
+let activeIndex = ref(
+  route.path === "/" || route.path === "/welcome" ? "/" : route.path,
+);
 
 watch(
   () => props.menuList,
   (menuList) => {
     console.log("Updated menuList:打印更新后的 menuList", menuList); // 打印更新后的 menuList
     menu.value = menuList;
-  }
+  },
 );
 
 // 监听路由变化，更新activeIndex
 watch(
   () => route.path,
   (newPath) => {
-    activeIndex.value = newPath === "/" || newPath === "/welcome" ? "/" : newPath.substring(1);
-  }
+    activeIndex.value =
+      newPath === "/" || newPath === "/welcome" ? "/" : newPath;
+  },
 );
 
 console.log("菜单", menu.value);
@@ -135,10 +138,8 @@ const handleClose = (key, keyPath) => {
 }
 
 /* 激活的子菜单标题背景色 */
-// .el-sub-menu.is-active > .el-sub-menu__title {
-//   background-color: #409eff !important; /* 替换为你想要的颜色 */
-//   color: #409eff !important; /* 可选：修改文字颜色 */
-// }
-
-
+/* .el-sub-menu.is-active > .el-sub-menu__title {
+  background-color: #409eff !important; 
+  color: #409eff !important; 
+} */
 </style>
