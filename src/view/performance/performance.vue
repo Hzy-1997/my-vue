@@ -1,7 +1,7 @@
 <!-- 演出管理：演出列表 + 点击行内"场次管理"在抽屉中维护该演出的场次排布（星期 × 开演时间） -->
 <template>
   <div class="perf-manage">
-    <!-- 头部：查询 -->
+    <!-- 头部：查询 + 新增按钮 -->
     <div class="query-form">
       <div class="title">演出管理</div>
       <div class="query-item">
