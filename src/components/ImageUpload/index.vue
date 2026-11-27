@@ -84,7 +84,6 @@ const imageUrl = ref(
   config.baseApi + "/public/uploadImg?category=" + props.category,
 );
 
-console.log("上传接口地址:", imageUrl);
 
 // 响应式数据
 const fileList = ref([]);

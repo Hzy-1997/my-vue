@@ -722,14 +722,15 @@ const handleCreate = () => {
   resetEditorImages();
   dialogVisible.value = true;
 };
+
 const handleEdit = (row) => {
-  formData.value = {
-    ...formDataInfo(),
-    ...JSON.parse(JSON.stringify(row)),
-    suitableCrowd: toArray(row.suitableCrowd),
-    tags: toArray(row.tags),
-    action: "update",
-  };
+  formData.value = formDataInfo();
+  for (let key in formData.value) {
+    if (row[key] !== undefined) formData.value[key] = row[key];
+  }
+  formData.value.suitableCrowd = toArray(row.suitableCrowd);
+  formData.value.tags = toArray(row.tags);
+  formData.value.action = "update";
   resetEditorImages();
   dialogVisible.value = true;
 };

@@ -28,6 +28,7 @@ import * as serviceSuggestionsApi from './serviceSuggestions';
 import * as dictApi from './dict';
 import * as contactPhoneApi from './contactPhone';
 import * as performanceApi from './performance';
+import * as scenicSpotsApi from './scenicSpots';
 
 
 
@@ -52,5 +53,6 @@ export {
     serviceSuggestionsApi,
     dictApi,
     contactPhoneApi,
-    performanceApi
+    performanceApi,
+    scenicSpotsApi
 };
